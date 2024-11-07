@@ -40,9 +40,6 @@
 #define LED8_PORT GPIOD
 #define LED8_PIN GPIO_PIN_15
 
-#define ON RESET
-#define OFF SET
-
 static gpio_port_pin_t led_gpio[LED_SIZE] = {
         {LED1_PORT, LED1_PIN, LED1_RCU_GPIO},
         {LED2_PORT, LED2_PIN, LED2_RCU_GPIO},
@@ -62,53 +59,83 @@ void int_led_init(void) {
     }
 
     gpio_bit_reset(LED_SW_PORT, LED_SW_PIN);
-    int_led_off_all();
+    int_led_off_all(0);
 }
-void int_led_trotting_horse_lamp(LED_NO start, LED_NO end,
+void int_led_trotting_horse_lamp(LED_INDEX start, LED_INDEX end,
                                  int32_t step, uint32_t delay_ms) {
     if (start <= end) {
-        for (int32_t led_no = start; led_no <= end; led_no += step) {
-            int_led_on(led_no);
-            delay_1ms(delay_ms);
-            int_led_off(led_no);
+        for (int32_t led_index = start; led_index <= end; led_index += step) {
+            int_led_on(led_index, delay_ms);
+            int_led_off(led_index, 0);
         }
     } else {
-        for (int32_t led_no = start; led_no >= end; led_no -= step) {
-            int_led_on(led_no);
-            delay_1ms(delay_ms);
-            int_led_off(led_no);
+        for (int32_t led_index = start; led_index >= end; led_index -= step) {
+            int_led_on(led_index, delay_ms);
+            int_led_off(led_index, 0);
         }
     }
 }
 
-void int_led_waterfall_lamp(LED_NO start, LED_NO end, int32_t step, uint32_t delay_ms) {
+void int_led_waterfall_lamp(LED_INDEX start, LED_INDEX end, int32_t step, uint32_t delay_ms) {
     if (start <= end) {
-        for (int32_t led_no = start; led_no <= end; led_no += step) {
-            int_led_on(led_no);
-            delay_1ms(delay_ms);
+        for (int32_t led_index = start; led_index <= end; led_index += step) {
+            int_led_on(led_index, delay_ms);
         }
     } else {
-        for (int32_t led_no = start; led_no >= end; led_no -= step) {
-            int_led_on(led_no);
-            delay_1ms(delay_ms);
+        for (int32_t led_index = start; led_index >= end; led_index -= step) {
+            int_led_on(led_index, delay_ms);
         }
     }
 }
 
-void int_led_on(LED_NO led_no) {
-    gpio_bit_write(led_gpio[led_no].port, led_gpio[led_no].pin, ON);
-}
-void int_led_off(LED_NO led_no) {
-    gpio_bit_write(led_gpio[led_no].port, led_gpio[led_no].pin, OFF);
-}
-void int_led_on_all() {
-    for (uint32_t i = 0; i < LED_SIZE; i++) {
-        gpio_bit_write(led_gpio[i].port, led_gpio[i].pin, ON);
+void int_led_on(LED_INDEX led_index, uint32_t delay_ms) {
+    gpio_bit_write(led_gpio[led_index].port, led_gpio[led_index].pin, LED_ON);
+    if (delay_ms) {
+        delay_1ms(delay_ms);
     }
 }
-void int_led_off_all() {
+
+void int_led_off(LED_INDEX led_index, uint32_t delay_ms) {
+    gpio_bit_write(led_gpio[led_index].port, led_gpio[led_index].pin, LED_OFF);
+    if (delay_ms) {
+        delay_1ms(delay_ms);
+    }
+}
+
+void int_led_on_all(uint32_t delay_ms) {
     for (uint32_t i = 0; i < LED_SIZE; i++) {
-        gpio_bit_write(led_gpio[i].port, led_gpio[i].pin, OFF);
+        gpio_bit_write(led_gpio[i].port, led_gpio[i].pin, LED_ON);
+    }
+    if (delay_ms) {
+        delay_1ms(delay_ms);
+    }
+}
+void int_led_off_all(uint32_t delay_ms) {
+    for (uint32_t i = 0; i < LED_SIZE; i++) {
+        gpio_bit_write(led_gpio[i].port, led_gpio[i].pin, LED_OFF);
+    }
+    if (delay_ms) {
+        delay_1ms(delay_ms);
+    }
+}
+void int_led_control(LED_INDEX leds[], uint8_t len, bit_status state, uint32_t delay_ms) {
+    for (uint8_t i = 0; i < len; i++) {
+        if (leds[i] < LED_SIZE) {
+            if (state == LED_ON) {
+                int_led_on(leds[i], 0);
+            } else {
+                int_led_off(leds[i], 0);
+            }
+        }
+    }
+    if (delay_ms) {
+        delay_1ms(delay_ms);
+    }
+}
+void int_led_turn(LED_INDEX led_index, bit_status led_status, uint32_t delay_ms) {
+    gpio_bit_write(led_gpio[led_index].port, led_gpio[led_index].pin, led_status);
+    if (delay_ms) {
+        delay_1ms(delay_ms);
     }
 }
 

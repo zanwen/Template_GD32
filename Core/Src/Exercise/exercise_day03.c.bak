@@ -166,14 +166,14 @@ void exercise1_3(void) {
 
 void exercise1_4(void) {
     int32_t delay_ms = 500;
-    for (LED_NO led_no = LED1; led_no <= LED4; ++led_no) {
-        int_led_on(led_no);
+    for (LED_INDEX led_index = LED1; led_index <= LED4; ++led_index) {
+        int_led_on(led_index);
     }
 
     while (1) {
         int_led_waterfall_lamp(LED5, LED8, 1, delay_ms);
-        for (LED_NO led_no = LED5; led_no <= LED8; ++led_no) {
-            int_led_off(led_no);
+        for (LED_INDEX led_index = LED5; led_index <= LED8; ++led_index) {
+            int_led_off(led_index);
         }
         delay_1ms(delay_ms);
     }
