@@ -1,0 +1,32 @@
+
+#define uint32_t unsigned int
+#define RCU_AHB1EN (*(uint32_t *) (0x40023800 + 0x30))
+#define GPIOB_CTL (*(uint32_t *) (0x40020400 + 0x00))
+#define GPIOB_OCTL (*(uint32_t *) (0x40020400 + 0x14))
+
+int main(void) {
+
+    // 1. init GPIO clock via RCC
+    RCU_AHB1EN |= (1 << 1);
+
+    // 2. configure GPIO work mode
+    // PB2
+    GPIOB_CTL &= ~(3 << (2 * 2));
+    GPIOB_CTL |= (1 << (2 * 2)); // push-pull output mode
+
+    // 3. configure GPIO inner drive mode(output options, pullup/pulldown)
+    // 3.1 output mode
+    // push-pull by default
+    // 3.2 output speed
+    // use default speed
+
+    // 4. set pin's status
+    while (1) {
+        GPIOB_OCTL |= (1 << 2); // set PB2 high
+        // delay
+        for (int i = 0; i < 10000000; i++) {}
+        GPIOB_OCTL &= ~(1 << 2); // set PB2 low
+        // delay
+        for (int i = 0; i < 10000000; i++) {}
+    }
+}
