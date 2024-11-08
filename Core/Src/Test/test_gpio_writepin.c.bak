@@ -27,9 +27,9 @@ void gpio_writepin(GPIOB_TypeDef *gpiox, uint8_t pin, uint8_t bit_action) {
         return;
     }
     if (bit_action == 0) {
-        gpiox->BOP = (1 << (pin + 16));
+        gpiox->BOP |= (1 << (pin + 16));
     } else {
-        gpiox->BOP = (1 << pin);
+        gpiox->BOP |= (1 << pin);
     }
 }
 
