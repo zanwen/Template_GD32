@@ -1,50 +1,24 @@
-
-#define uint32_t unsigned int
-#define RCU_AHB1EN (*(volatile uint32_t *) (0x40023800 + 0x30))
-#define GPIOB_CTL (*(volatile uint32_t *) (0x40020400 + 0x00))
-#define GPIOB_OCTL (*(volatile uint32_t *) (0x40020400 + 0x14))
-#define GPIOB ((volatile GPIOB_TypeDef *) 0x40020400)
-
-typedef struct {
-    volatile uint32_t CTL;
-    volatile uint32_t OMODE;
-    volatile uint32_t OSPD;
-    volatile uint32_t PUD;
-    volatile uint32_t ISTAT;
-    volatile uint32_t OCTL;
-    volatile uint32_t BOP;
-    volatile uint32_t LOCK;
-    volatile uint32_t AFSEL0;
-    volatile uint32_t AFSEL1;
-    volatile uint32_t BC;
-    volatile uint32_t TG;
-} GPIOB_TypeDef;
+#include "dri_usart.h"
+#include "int_key.h"
+#include "int_led.h"
+#include "logger.h"
+#include "retarget.h"
+#include "systick.h"
 
 int main(void) {
+    systick_config();
+    dri_USART0_init();
+    retarget_init(USART0);
 
-    // 1. init GPIO clock via RCC
-    RCU_AHB1EN |= (1 << 1);
-
-    // 2. configure GPIO work mode
-    // PB2
-//    GPIOB_CTL &= ~(3 << (2 * 2));
-//    GPIOB_CTL |= (1 << (2 * 2));// push-pull output mode
-    GPIOB->CTL &= ~(3 << (2 * 2));
-    GPIOB->CTL |= (1 << (2 * 2));
-
-    // 3. configure GPIO inner drive mode(output options, pullup/pulldown)
-    // 3.1 output mode
-    // push-pull by default
-    // 3.2 output speed
-    // use default speed
-
-    // 4. set pin's status
+    char buffer[64];
+    uint8_t data[] = {0x11, 0x22, 0x33};
     while (1) {
-        GPIOB->OCTL |= (1 << 2);// set PB2 high
-        // delay
-        for (int i = 0; i < 10000000; i++) {}
-        GPIOB->OCTL &= ~(1 << 2);// set PB2 low
-        // delay
-        for (int i = 0; i < 10000000; i++) {}
+        scanf("%s", buffer);
+        printf("echo => %s", buffer);
+        LOG_INFO("info msg => %s", buffer);
+        LOG_DEBUG("debug msg => %s", buffer);
+        LOG_ERROR("error msg => %s", buffer);
+        LOG_ASSERT(1 == 2);
+        LOG_DUMP("dump msg => %s", data, sizeof(data), "data");
     }
 }
