@@ -14,9 +14,10 @@
 
 #define RX_BUFFER_SIZE 128
 
-static uint8_t rx_buf[RX_BUFFER_SIZE + 1];
-static __IO uint16_t rx_buf_rindex = 0;
-static __IO uint16_t rx_buf_windex = 0;
+static uint8_t sg_rxbuf[RX_BUFFER_SIZE + 1];
+static __IO uint16_t sg_rxbuf_rindex = 0;
+static __IO uint16_t sg_rxbuf_windex = 0;
+static read_complete_callabck_t sg_read_callback = NULL;
 
 void dri_usart0_init(void) {
     // 1. Enable clocks
@@ -49,6 +50,7 @@ void dri_usart0_init(void) {
     // 5. Enable USART interrupt
     nvic_irq_enable(USART0_IRQn, 0, 0);
     usart_interrupt_enable(USART0, USART_INT_RBNE);
+    usart_interrupt_enable(USART0, USART_INT_IDLE);
 }
 
 void dri_usart0_send_byte(uint8_t data) {
@@ -77,9 +79,9 @@ void dri_usart0_send_str(char *str) {
 uint8_t dri_usart0_get_char(void) {
     uint8_t data = 0;
     if (dri_usart0_isreadable()) {
-        data = rx_buf[rx_buf_rindex++];
-        if (rx_buf_rindex >= RX_BUFFER_SIZE) {
-            rx_buf_rindex = 0;
+        data = sg_rxbuf[sg_rxbuf_rindex++];
+        if (sg_rxbuf_rindex >= RX_BUFFER_SIZE) {
+            sg_rxbuf_rindex = 0;
         }
     }
     return data;
@@ -92,34 +94,43 @@ void dri_usart0_handle_irq(void) {
         usart_interrupt_flag_clear(USART0, USART_INT_FLAG_RBNE);
         uint16_t byte_data = usart_data_receive(USART0);
         // check buffer free space
-        if ((rx_buf_windex + 1) % RX_BUFFER_SIZE == rx_buf_rindex) {
+        if ((sg_rxbuf_windex + 1) % RX_BUFFER_SIZE == sg_rxbuf_rindex) {
             // buffer is full, discard the new data
             LOG_ERROR("[dri_usart0_handle_irq] buffer is full, discard the new data 0x%02x. "
                       "windex = %d, rindex = %d\r\n",
-                      byte_data, rx_buf_windex, rx_buf_rindex);
+                      byte_data, sg_rxbuf_windex, sg_rxbuf_rindex);
             return;
         }
         // write data and move windex
-        rx_buf[rx_buf_windex++] = usart_data_receive(USART0);
-        if (rx_buf_windex >= RX_BUFFER_SIZE) {
-            rx_buf_windex = 0;
+        sg_rxbuf[sg_rxbuf_windex++] = usart_data_receive(USART0);
+        if (sg_rxbuf_windex >= RX_BUFFER_SIZE) {
+            sg_rxbuf_windex = 0;
+        }
+    }
+
+    if (usart_interrupt_flag_get(USART0, USART_INT_FLAG_IDLE) == SET) {
+        // clear interrupt flag by usart_data_receive
+        usart_data_receive(USART0);
+        if (sg_read_callback) {
+            sg_read_callback(sg_rxbuf, sg_rxbuf_windex - sg_rxbuf_rindex);
+            sg_rxbuf_rindex = sg_rxbuf_windex = 0;
         }
     }
 }
 bool dri_usart0_isreadable(void) {
-    return (rx_buf_rindex != rx_buf_windex);
+    return (sg_rxbuf_rindex != sg_rxbuf_windex);
 }
 
 uint16_t dri_usart0_read(uint8_t *buf, uint16_t bufsize) {
     if (!dri_usart0_isreadable()) {
         return 0;
     }
-    uint16_t readable_size = (rx_buf_windex - rx_buf_rindex + RX_BUFFER_SIZE) % RX_BUFFER_SIZE;
+    uint16_t readable_size = (sg_rxbuf_windex - sg_rxbuf_rindex + RX_BUFFER_SIZE) % RX_BUFFER_SIZE;
     uint16_t read_size = (readable_size <= bufsize) ? readable_size : bufsize;
     for (uint16_t i = 0; i < read_size; i++) {
-        buf[i] = rx_buf[rx_buf_rindex++];
-        if (rx_buf_rindex >= RX_BUFFER_SIZE) {
-            rx_buf_rindex = 0;
+        buf[i] = sg_rxbuf[sg_rxbuf_rindex++];
+        if (sg_rxbuf_rindex >= RX_BUFFER_SIZE) {
+            sg_rxbuf_rindex = 0;
         }
     }
     return read_size;
@@ -131,4 +142,7 @@ uint16_t dri_usart0_get_str(uint8_t *buf, uint16_t bufsize) {
     uint16_t read_size = dri_usart0_read(buf, bufsize - 1);
     buf[read_size] = '\0';
     return read_size;
+}
+void dri_usart0_read_complete_callabck(read_complete_callabck_t callback) {
+    sg_read_callback = callback;
 }

@@ -28,5 +28,5 @@ void log_dump(const uint8_t *data, uint16_t len) {
             putchar(ch);
         }
     }
-    printf("\r\n");
+//    printf("\r\n");
 }

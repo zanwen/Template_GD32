@@ -5,10 +5,13 @@
 #include "retarget.h"
 #include "systick.h"
 
+void on_read_complete(uint8_t *data, uint16_t len);
+
 int main(void) {
     systick_config();
-    dri_usart0_init();
     retarget_init(USART0);
+    dri_usart0_init();
+//    dri_usart0_read_complete_callabck(on_read_complete);
 
     uint8_t buffer[64];
     while (1) {
@@ -18,4 +21,8 @@ int main(void) {
         }
         delay_1ms(10);
     }
+}
+
+void on_read_complete(uint8_t *data, uint16_t len) {
+    LOG_DEBUG("%d %d", data[0], data[1]);
 }
