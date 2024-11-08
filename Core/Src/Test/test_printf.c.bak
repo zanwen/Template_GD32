@@ -7,7 +7,7 @@
 
 int main(void) {
     systick_config();
-    dri_USART0_init();
+    dri_usart0_init();
     retarget_init(USART0);
 
     char buffer[64];

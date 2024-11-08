@@ -35,16 +35,22 @@ OF SUCH DAMAGE.
 #include "gd32f4xx_it.h"
 #include "systick.h"
 
+extern void dri_usart0_handle_irq(void);
+
+void USART1_IRQHandler(void) {
+    // startup_stm32f407vetx.s 是用的CubeMX生成的，STM32的USART1对应GD32的UART0
+    dri_usart0_handle_irq();
+}
+
 /*!
     \brief      this function handles NMI exception
     \param[in]  none
     \param[out] none
     \retval     none
 */
-void NMI_Handler(void)
-{
+void NMI_Handler(void) {
     /* if NMI exception occurs, go to infinite loop */
-    while(1) {
+    while (1) {
     }
 }
 
@@ -54,10 +60,9 @@ void NMI_Handler(void)
     \param[out] none
     \retval     none
 */
-void HardFault_Handler(void)
-{
+void HardFault_Handler(void) {
     /* if Hard Fault exception occurs, go to infinite loop */
-    while(1) {
+    while (1) {
     }
 }
 
@@ -67,10 +72,9 @@ void HardFault_Handler(void)
     \param[out] none
     \retval     none
 */
-void MemManage_Handler(void)
-{
+void MemManage_Handler(void) {
     /* if Memory Manage exception occurs, go to infinite loop */
-    while(1) {
+    while (1) {
     }
 }
 
@@ -80,10 +84,9 @@ void MemManage_Handler(void)
     \param[out] none
     \retval     none
 */
-void BusFault_Handler(void)
-{
+void BusFault_Handler(void) {
     /* if Bus Fault exception occurs, go to infinite loop */
-    while(1) {
+    while (1) {
     }
 }
 
@@ -93,10 +96,9 @@ void BusFault_Handler(void)
     \param[out] none
     \retval     none
 */
-void UsageFault_Handler(void)
-{
+void UsageFault_Handler(void) {
     /* if Usage Fault exception occurs, go to infinite loop */
-    while(1) {
+    while (1) {
     }
 }
 
@@ -106,10 +108,9 @@ void UsageFault_Handler(void)
     \param[out] none
     \retval     none
 */
-void SVC_Handler(void)
-{
+void SVC_Handler(void) {
     /* if SVC exception occurs, go to infinite loop */
-    while(1) {
+    while (1) {
     }
 }
 
@@ -119,10 +120,9 @@ void SVC_Handler(void)
     \param[out] none
     \retval     none
 */
-void DebugMon_Handler(void)
-{
+void DebugMon_Handler(void) {
     /* if DebugMon exception occurs, go to infinite loop */
-    while(1) {
+    while (1) {
     }
 }
 
@@ -132,10 +132,9 @@ void DebugMon_Handler(void)
     \param[out] none
     \retval     none
 */
-void PendSV_Handler(void)
-{
+void PendSV_Handler(void) {
     /* if PendSV exception occurs, go to infinite loop */
-    while(1) {
+    while (1) {
     }
 }
 
@@ -145,7 +144,6 @@ void PendSV_Handler(void)
     \param[out] none
     \retval     none
 */
-void SysTick_Handler(void)
-{
+void SysTick_Handler(void) {
     delay_decrement();
 }

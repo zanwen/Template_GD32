@@ -46,12 +46,7 @@ PUTCHAR_PROTOTYPE {
    * @retval None
    */
 GETCHAR_PROTOTYPE {
-
-    /* 很简单，直接调用库函数中的接收 */
-    /* 等待串口输入数据 */
+    // TODO 暂不支持与USART读中断同时使用
     while (usart_flag_get(sg_usart_periph, USART_FLAG_RBNE) == RESET);
-
-    /* 直接返回接收到的字符 */
     return (int) usart_data_receive(sg_usart_periph);
-
 }

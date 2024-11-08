@@ -1,63 +1,21 @@
-
-#define uint32_t unsigned int
-#define uint8_t unsigned char
-
-#define RCU_AHB1EN (*(volatile uint32_t *) (0x40023800 + 0x30))
-#define GPIOB_CTL (*(volatile uint32_t *) (0x40020400 + 0x00))
-#define GPIOB_OCTL (*(volatile uint32_t *) (0x40020400 + 0x14))
-#define GPIOB ((GPIOB_TypeDef *) 0x40020400)
-
-typedef struct {
-    volatile uint32_t CTL;
-    volatile uint32_t OMODE;
-    volatile uint32_t OSPD;
-    volatile uint32_t PUD;
-    volatile uint32_t ISTAT;
-    volatile uint32_t OCTL;
-    volatile uint32_t BOP;
-    volatile uint32_t LOCK;
-    volatile uint32_t AFSEL0;
-    volatile uint32_t AFSEL1;
-    volatile uint32_t BC;
-    volatile uint32_t TG;
-} GPIOB_TypeDef;
-
-void gpio_writepin(GPIOB_TypeDef *gpiox, uint8_t pin, uint8_t bit_action) {
-    if (pin >= 16) {
-        return;
-    }
-    if (bit_action == 0) {
-        gpiox->BOP = (1 << (pin + 16));
-    } else {
-        gpiox->BOP = (1 << pin);
-    }
-}
+#include "dri_usart0.h"
+#include "int_key.h"
+#include "int_led.h"
+#include "logger.h"
+#include "retarget.h"
+#include "systick.h"
 
 int main(void) {
+    systick_config();
+    dri_usart0_init();
+    retarget_init(USART0);
 
-    // 1. init GPIO clock via RCC
-    RCU_AHB1EN |= (1 << 1);
-
-    // 2. configure GPIO work mode
-    // PB2
-    //    GPIOB_CTL &= ~(3 << (2 * 2));
-    //    GPIOB_CTL |= (1 << (2 * 2));// push-pull output mode
-    GPIOB->CTL &= ~(3 << (2 * 2));
-    GPIOB->CTL |= (1 << (2 * 2));
-
-    // 3. configure GPIO inner drive mode(output options, pullup/pulldown)
-    // 3.1 output mode
-    // push-pull by default
-    // 3.2 output speed
-    // use default speed
-
-    // 4. set pin's status
+    uint8_t buffer[64];
     while (1) {
-        gpio_writepin(GPIOB, 2, 1);
-        // delay
-        for (int i = 0; i < 10000000; i++) {}
-        gpio_writepin(GPIOB, 2, 0);
-        // delay
-        for (int i = 0; i < 10000000; i++) {}
+        if (dri_usart0_isreadable()) {
+            uint16_t rbytes = dri_usart0_get_str(buffer, 64);
+            LOG_DEBUG("rbytes = %d, buffer = %s", rbytes, buffer);
+        }
+        delay_1ms(10);
     }
 }

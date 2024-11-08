@@ -1,0 +1,134 @@
+//
+// Created by 86157 on 2024/11/6.
+//
+#include "dri_usart0.h"
+#include "gd32f4xx.h"
+#include "logger.h"
+
+#define USART0_RCU_GPIO_PORT RCU_GPIOA
+#define USART0_TX_PORT GPIOA
+#define USART0_TX_PIN GPIO_PIN_9
+#define USART0_RX_PORT GPIOA
+#define USART0_RX_PIN GPIO_PIN_10
+#define USART0_GPIO_AF GPIO_AF_7
+
+#define RX_BUFFER_SIZE 128
+
+static uint8_t rx_buf[RX_BUFFER_SIZE + 1];
+static __IO uint16_t rx_buf_rindex = 0;
+static __IO uint16_t rx_buf_windex = 0;
+
+void dri_usart0_init(void) {
+    // 1. Enable clocks
+    rcu_periph_clock_enable(USART0_RCU_GPIO_PORT);
+    rcu_periph_clock_enable(RCU_USART0);
+
+    // 2. Configure GPIO pins
+    // Configure TX pin
+    gpio_af_set(USART0_TX_PORT, USART0_GPIO_AF, USART0_TX_PIN);
+    gpio_mode_set(USART0_TX_PORT, GPIO_MODE_AF, GPIO_PUPD_NONE, USART0_TX_PIN);
+    // inner driving mode
+    gpio_output_options_set(USART0_TX_PORT, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, USART0_TX_PIN);
+    // Configure RX pin
+    gpio_af_set(USART0_RX_PORT, USART0_GPIO_AF, USART0_RX_PIN);
+    gpio_mode_set(USART0_RX_PORT, GPIO_MODE_AF, GPIO_PUPD_NONE, USART0_RX_PIN);
+
+    // 3. Configure USART
+    usart_deinit(USART0);
+    usart_baudrate_set(USART0, 115200);
+    usart_parity_config(USART0, USART_PM_NONE);
+    usart_word_length_set(USART0, USART_WL_8BIT);
+    usart_stop_bit_set(USART0, USART_STB_1BIT);
+    usart_data_first_config(USART0, USART_MSBF_LSB);
+    usart_receive_config(USART0, USART_RECEIVE_ENABLE);
+    usart_transmit_config(USART0, USART_TRANSMIT_ENABLE);
+
+    // 4. Enable USART
+    usart_enable(USART0);
+
+    // 5. Enable USART interrupt
+    nvic_irq_enable(USART0_IRQn, 0, 0);
+    usart_interrupt_enable(USART0, USART_INT_RBNE);
+}
+
+void dri_usart0_send_byte(uint8_t data) {
+    usart_data_transmit(USART0, data);
+    while (RESET == usart_flag_get(USART0, USART_FLAG_TBE))
+        ;
+}
+
+void dri_usart0_send_bytes(uint8_t data[], uint32_t len) {
+    if (data) {
+        while (len--) {
+            dri_usart0_send_byte(*data++);
+        }
+    }
+}
+
+void dri_usart0_send_str(char *str) {
+    if (str) {
+        while (*str) {
+            dri_usart0_send_byte(*str);
+            str++;
+        }
+    }
+}
+
+uint8_t dri_usart0_get_char(void) {
+    uint8_t data = 0;
+    if (dri_usart0_isreadable()) {
+        data = rx_buf[rx_buf_rindex++];
+        if (rx_buf_rindex >= RX_BUFFER_SIZE) {
+            rx_buf_rindex = 0;
+        }
+    }
+    return data;
+}
+
+void dri_usart0_handle_irq(void) {
+    if ((usart_interrupt_flag_get(USART0, USART_INT_FLAG_RBNE) == SET) &&
+        (usart_flag_get(USART0, USART_FLAG_RBNE) == SET)) {
+        // clear interrupt flag
+        usart_interrupt_flag_clear(USART0, USART_INT_FLAG_RBNE);
+        uint16_t byte_data = usart_data_receive(USART0);
+        // check buffer free space
+        if ((rx_buf_windex + 1) % RX_BUFFER_SIZE == rx_buf_rindex) {
+            // buffer is full, discard the new data
+            LOG_ERROR("[dri_usart0_handle_irq] buffer is full, discard the new data 0x%02x. "
+                      "windex = %d, rindex = %d\r\n",
+                      byte_data, rx_buf_windex, rx_buf_rindex);
+            return;
+        }
+        // write data and move windex
+        rx_buf[rx_buf_windex++] = usart_data_receive(USART0);
+        if (rx_buf_windex >= RX_BUFFER_SIZE) {
+            rx_buf_windex = 0;
+        }
+    }
+}
+bool dri_usart0_isreadable(void) {
+    return (rx_buf_rindex != rx_buf_windex);
+}
+
+uint16_t dri_usart0_read(uint8_t *buf, uint16_t bufsize) {
+    if (!dri_usart0_isreadable()) {
+        return 0;
+    }
+    uint16_t readable_size = (rx_buf_windex - rx_buf_rindex + RX_BUFFER_SIZE) % RX_BUFFER_SIZE;
+    uint16_t read_size = (readable_size <= bufsize) ? readable_size : bufsize;
+    for (uint16_t i = 0; i < read_size; i++) {
+        buf[i] = rx_buf[rx_buf_rindex++];
+        if (rx_buf_rindex >= RX_BUFFER_SIZE) {
+            rx_buf_rindex = 0;
+        }
+    }
+    return read_size;
+}
+uint16_t dri_usart0_get_str(uint8_t *buf, uint16_t bufsize) {
+    if (bufsize == 0 || !dri_usart0_isreadable()) {
+        return 0;
+    }
+    uint16_t read_size = dri_usart0_read(buf, bufsize - 1);
+    buf[read_size] = '\0';
+    return read_size;
+}
