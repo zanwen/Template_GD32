@@ -7,6 +7,5 @@
 #include "gd32f4xx.h"
 
 typedef void (*callback_t)(void);
-typedef void(*usart_read_complete_callabck_t)(uint8_t *buf);
 
 #endif//COM_TYPEDEF_H

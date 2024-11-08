@@ -19,7 +19,7 @@ static const uint16_t sg_rxbuf_size = RX_BUFFER_SIZE;
 static uint8_t sg_rxbuf[RX_BUFFER_SIZE + 1];
 static __IO uint16_t sg_rxbuf_rindex = 0;
 static __IO uint16_t sg_rxbuf_windex = 0;
-static read_complete_callabck_t sg_read_callback = NULL;
+static callback_t sg_read_callback = NULL;
 
 void dri_usart0_init(void) {
     // 1. Enable clocks
@@ -114,7 +114,8 @@ void dri_usart0_handle_irq(void) {
         // clear interrupt flag by usart_data_receive
         usart_data_receive(USART0);
         if (sg_read_callback) {
-            sg_read_callback(sg_rxbuf + sg_rxbuf_rindex, sg_rxbuf_windex - sg_rxbuf_rindex);
+            sg_rxbuf[sg_rxbuf_windex] = '\0';
+            sg_read_callback();
             sg_rxbuf_rindex = sg_rxbuf_windex = 0;
         }
     }
@@ -145,6 +146,6 @@ uint16_t dri_usart0_get_str(uint8_t *buf, uint16_t bufsize) {
     buf[read_size] = '\0';
     return read_size;
 }
-void dri_usart0_read_complete_callabck(read_complete_callabck_t callback) {
+void dri_usart0_read_complete_callabck(callback_t callback) {
     sg_read_callback = callback;
 }
