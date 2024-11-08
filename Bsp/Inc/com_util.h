@@ -13,6 +13,6 @@ typedef struct {
     rcu_periph_enum rcu_gpio;
 } gpio_port_pin_t;
 
-typedef void (*callback_t)(void);
+uint32_t com_util_min(uint32_t a, uint32_t b);
 
 #endif//COM_UTIL_H

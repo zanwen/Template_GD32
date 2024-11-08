@@ -2,6 +2,7 @@
 // Created by 86157 on 2024/11/6.
 //
 #include "dri_usart0.h"
+#include "com_util.h"
 #include "gd32f4xx.h"
 #include "logger.h"
 
@@ -12,8 +13,9 @@
 #define USART0_RX_PIN GPIO_PIN_10
 #define USART0_GPIO_AF GPIO_AF_7
 
-#define RX_BUFFER_SIZE 128
+#define RX_BUFFER_SIZE 512
 
+static const uint16_t sg_rxbuf_size = RX_BUFFER_SIZE;
 static uint8_t sg_rxbuf[RX_BUFFER_SIZE + 1];
 static __IO uint16_t sg_rxbuf_rindex = 0;
 static __IO uint16_t sg_rxbuf_windex = 0;
@@ -112,7 +114,7 @@ void dri_usart0_handle_irq(void) {
         // clear interrupt flag by usart_data_receive
         usart_data_receive(USART0);
         if (sg_read_callback) {
-            sg_read_callback(sg_rxbuf, sg_rxbuf_windex - sg_rxbuf_rindex);
+            sg_read_callback(sg_rxbuf + sg_rxbuf_rindex, sg_rxbuf_windex - sg_rxbuf_rindex);
             sg_rxbuf_rindex = sg_rxbuf_windex = 0;
         }
     }
@@ -125,18 +127,18 @@ uint16_t dri_usart0_read(uint8_t *buf, uint16_t bufsize) {
     if (!dri_usart0_isreadable()) {
         return 0;
     }
-    uint16_t readable_size = (sg_rxbuf_windex - sg_rxbuf_rindex + RX_BUFFER_SIZE) % RX_BUFFER_SIZE;
-    uint16_t read_size = (readable_size <= bufsize) ? readable_size : bufsize;
+    uint16_t readable_size = (sg_rxbuf_windex + sg_rxbuf_size - sg_rxbuf_rindex) % sg_rxbuf_size;
+    uint16_t read_size = com_util_min(readable_size, bufsize);
     for (uint16_t i = 0; i < read_size; i++) {
         buf[i] = sg_rxbuf[sg_rxbuf_rindex++];
-        if (sg_rxbuf_rindex >= RX_BUFFER_SIZE) {
+        if (sg_rxbuf_rindex >= sg_rxbuf_size) {
             sg_rxbuf_rindex = 0;
         }
     }
     return read_size;
 }
 uint16_t dri_usart0_get_str(uint8_t *buf, uint16_t bufsize) {
-    if (bufsize == 0 || !dri_usart0_isreadable()) {
+    if (bufsize == 0) {
         return 0;
     }
     uint16_t read_size = dri_usart0_read(buf, bufsize - 1);
