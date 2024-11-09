@@ -113,8 +113,8 @@ void dri_usart0_handle_irq(void) {
     if (usart_interrupt_flag_get(USART0, USART_INT_FLAG_IDLE) == SET) {
         // clear interrupt flag by usart_data_receive
         usart_data_receive(USART0);
+        LOG_DEBUG("USART_IT_IDLE event");
         if (sg_read_callback) {
-            sg_rxbuf[sg_rxbuf_windex] = '\0';
             sg_read_callback();
             sg_rxbuf_rindex = sg_rxbuf_windex = 0;
         }
