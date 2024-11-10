@@ -50,7 +50,7 @@ void hal_usart0_init(void) {
     usart_enable(USART0);
 
     // 5. Enable USART interrupt
-    nvic_irq_enable(USART0_IRQn, 0, 0);
+    nvic_irq_enable(USART0_IRQn, 1, 0);
     usart_interrupt_enable(USART0, USART_INT_RBNE);
     usart_interrupt_enable(USART0, USART_INT_IDLE);
 }
