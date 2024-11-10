@@ -38,6 +38,7 @@ OF SUCH DAMAGE.
 
 extern void hal_usart0_handle_irq(void);
 extern void hal_exti0_handle_irq(void);
+extern void hal_exti2_handle_irq(void);
 
 
 void USART1_IRQHandler(void) {
@@ -151,9 +152,15 @@ void SysTick_Handler(void) {
     delay_decrement();
 }
 void EXTI0_IRQHandler(void) {
-    LOG_DEBUG("EXTI0_IRQHandler invoked");
     if (RESET != exti_interrupt_flag_get(EXTI_0)) {
         hal_exti0_handle_irq();
         exti_interrupt_flag_clear(EXTI_0);
+    }
+}
+
+void EXTI2_IRQHandler(void) {
+    if (RESET != exti_interrupt_flag_get(EXTI_2)) {
+        hal_exti2_handle_irq();
+        exti_interrupt_flag_clear(EXTI_2);
     }
 }

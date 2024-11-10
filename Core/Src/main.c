@@ -1,9 +1,10 @@
+#include "hal_exti0.h"
+#include "hal_exti2.h"
 #include "hal_usart0.h"
 #include "int_led.h"
 #include "logger.h"
 #include "retarget.h"
 #include "systick.h"
-#include "hal_exti0.h"
 
 void on_read_complete();
 
@@ -13,6 +14,7 @@ int main(void) {
     hal_usart0_init();
     hal_usart0_read_complete_callabck(on_read_complete);
     hal_exti0_init();
+    hal_exti2_init();
 
     while (1) {
     }

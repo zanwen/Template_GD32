@@ -45,4 +45,6 @@ void delay_1us(uint32_t count);
 /* delay decrement */
 void delay_decrement(void);
 
+uint64_t get_systick_us(void);
+
 #endif /* SYSTICK_H */
