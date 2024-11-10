@@ -35,11 +35,11 @@ OF SUCH DAMAGE.
 #include "gd32f4xx_it.h"
 #include "systick.h"
 
-extern void dri_usart0_handle_irq(void);
+extern void hal_usart0_handle_irq(void);
 
 void USART1_IRQHandler(void) {
     // startup_stm32f407vetx.s 是用的CubeMX生成的，STM32的USART1对应GD32的UART0
-    dri_usart0_handle_irq();
+    hal_usart0_handle_irq();
 }
 
 /*!

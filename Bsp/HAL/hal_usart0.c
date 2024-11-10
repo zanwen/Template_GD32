@@ -1,7 +1,7 @@
 //
 // Created by 86157 on 2024/11/6.
 //
-#include "dri_usart0.h"
+#include "hal_usart0.h"
 #include "com_util.h"
 #include "gd32f4xx.h"
 #include "logger.h"
@@ -21,7 +21,7 @@ static __IO uint16_t sg_rxbuf_rindex = 0;
 static __IO uint16_t sg_rxbuf_windex = 0;
 static callback_t sg_read_callback = NULL;
 
-void dri_usart0_init(void) {
+void hal_usart0_init(void) {
     // 1. Enable clocks
     rcu_periph_clock_enable(USART0_RCU_GPIO_PORT);
     rcu_periph_clock_enable(RCU_USART0);
@@ -55,32 +55,32 @@ void dri_usart0_init(void) {
     usart_interrupt_enable(USART0, USART_INT_IDLE);
 }
 
-void dri_usart0_send_byte(uint8_t data) {
+void hal_usart0_send_byte(uint8_t data) {
     usart_data_transmit(USART0, data);
     while (RESET == usart_flag_get(USART0, USART_FLAG_TBE))
         ;
 }
 
-void dri_usart0_send_bytes(uint8_t data[], uint32_t len) {
+void hal_usart0_send_bytes(uint8_t data[], uint32_t len) {
     if (data) {
         while (len--) {
-            dri_usart0_send_byte(*data++);
+            hal_usart0_send_byte(*data++);
         }
     }
 }
 
-void dri_usart0_send_str(char *str) {
+void hal_usart0_send_str(char *str) {
     if (str) {
         while (*str) {
-            dri_usart0_send_byte(*str);
+            hal_usart0_send_byte(*str);
             str++;
         }
     }
 }
 
-uint8_t dri_usart0_get_char(void) {
+uint8_t hal_usart0_get_char(void) {
     uint8_t data = 0;
-    if (dri_usart0_isreadable()) {
+    if (hal_usart0_isreadable()) {
         data = sg_rxbuf[sg_rxbuf_rindex++];
         if (sg_rxbuf_rindex >= RX_BUFFER_SIZE) {
             sg_rxbuf_rindex = 0;
@@ -89,7 +89,7 @@ uint8_t dri_usart0_get_char(void) {
     return data;
 }
 
-void dri_usart0_handle_irq(void) {
+void hal_usart0_handle_irq(void) {
     if ((usart_interrupt_flag_get(USART0, USART_INT_FLAG_RBNE) == SET) &&
         (usart_flag_get(USART0, USART_FLAG_RBNE) == SET)) {
         // clear interrupt flag
@@ -98,7 +98,7 @@ void dri_usart0_handle_irq(void) {
         // check buffer free space
         if ((sg_rxbuf_windex + 1) % RX_BUFFER_SIZE == sg_rxbuf_rindex) {
             // buffer is full, discard the new data
-            LOG_ERROR("[dri_usart0_handle_irq] buffer is full, discard the new data 0x%02x. "
+            LOG_ERROR("[hal_usart0_handle_irq] buffer is full, discard the new data 0x%02x. "
                       "windex = %d, rindex = %d\r\n",
                       byte_data, sg_rxbuf_windex, sg_rxbuf_rindex);
             return;
@@ -120,12 +120,12 @@ void dri_usart0_handle_irq(void) {
         }
     }
 }
-bool dri_usart0_isreadable(void) {
+bool hal_usart0_isreadable(void) {
     return (sg_rxbuf_rindex != sg_rxbuf_windex);
 }
 
-uint16_t dri_usart0_read(uint8_t *buf, uint16_t bufsize) {
-    if (!dri_usart0_isreadable()) {
+uint16_t hal_usart0_read(uint8_t *buf, uint16_t bufsize) {
+    if (!hal_usart0_isreadable()) {
         return 0;
     }
     uint16_t readable_size = (sg_rxbuf_windex + sg_rxbuf_size - sg_rxbuf_rindex) % sg_rxbuf_size;
@@ -138,14 +138,14 @@ uint16_t dri_usart0_read(uint8_t *buf, uint16_t bufsize) {
     }
     return read_size;
 }
-uint16_t dri_usart0_get_str(uint8_t *buf, uint16_t bufsize) {
+uint16_t hal_usart0_get_str(uint8_t *buf, uint16_t bufsize) {
     if (bufsize == 0) {
         return 0;
     }
-    uint16_t read_size = dri_usart0_read(buf, bufsize - 1);
+    uint16_t read_size = hal_usart0_read(buf, bufsize - 1);
     buf[read_size] = '\0';
     return read_size;
 }
-void dri_usart0_read_complete_callabck(callback_t callback) {
+void hal_usart0_read_complete_callabck(callback_t callback) {
     sg_read_callback = callback;
 }
