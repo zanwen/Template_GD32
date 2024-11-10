@@ -34,8 +34,11 @@ OF SUCH DAMAGE.
 
 #include "gd32f4xx_it.h"
 #include "systick.h"
+#include "logger.h"
 
 extern void hal_usart0_handle_irq(void);
+extern void hal_exti0_handle_irq(void);
+
 
 void USART1_IRQHandler(void) {
     // startup_stm32f407vetx.s 是用的CubeMX生成的，STM32的USART1对应GD32的UART0
@@ -146,4 +149,11 @@ void PendSV_Handler(void) {
 */
 void SysTick_Handler(void) {
     delay_decrement();
+}
+void EXTI0_IRQHandler(void) {
+    LOG_DEBUG("EXTI0_IRQHandler invoked");
+    if (RESET != exti_interrupt_flag_get(EXTI_0)) {
+        hal_exti0_handle_irq();
+        exti_interrupt_flag_clear(EXTI_0);
+    }
 }
