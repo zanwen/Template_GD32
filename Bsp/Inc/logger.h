@@ -46,26 +46,26 @@ extern "C" {
 					ONLY_FILENAME(__FILE__),__LINE__);			\
 				printf(s,##__VA_ARGS__);	\
 				printf("\33[0m\r\n");		\
-			}while(0)
+			}while(0);
 #define LOG_INFO(s,...)	\
 			do{                   \
 				printf("\033[0;32m\r\n[INFO] ");	\
 				printf(s,##__VA_ARGS__);	\
 				printf("\33[0m\r\n");		\
-			}while(0)
+			}while(0);
 #define LOG_ERROR(s,...)	\
 			do{	\
                 printf("\033[0;31m\r\n[ERROR %s:%d] ",	\
 					ONLY_FILENAME(__FILE__),__LINE__);			\
 				printf(s,##__VA_ARGS__);	\
 				printf("\33[0m\r\n");				\
-			}while(0)
+			}while(0);
 #define LOG_ASSERT(cond)	\
 			do { \
                 if (!(cond)) { \
                     printf("\r\n[ASSERT] File=[%s],Line=[%ld] Failed to vertify thc condition [\"%s\"]\r\n",__FILE__,__LINE__,#cond); \
                 } \
-			}while(0)
+			}while(0);
 #else
 #define LOG_DEBUG(s,...)
 #define LOG_INFO(s,...)
@@ -85,7 +85,7 @@ extern "C" {
 	    printf("\r\n\r\n");               \
         log_dump(data, len);          \
         printf("\33[0m\r\n");                              \
-    } while(0)
+    } while(0);
 
 void log_dump(const uint8_t *data, uint16_t len);
 #else
