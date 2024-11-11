@@ -57,8 +57,8 @@ __attribute__((weak)) void hal_timer6_overflow_callback() {
 
 }
 
-void hal_timer3_pwm_init(uint32_t timer_periph, uint16_t channel, uint16_t prescaler, uint16_t target_freq) {
-    rcu_periph_clock_enable(RCU_TIMER3);
+void hal_timer_pwm_init(rcu_periph_enum periph_clk, uint32_t timer_periph, uint16_t channel, uint16_t prescaler, uint16_t target_freq) {
+    rcu_periph_clock_enable(periph_clk);
 
     timer_deinit(timer_periph);
     rcu_timer_clock_prescaler_config(RCU_TIMER_PSC_MUL4);
@@ -76,11 +76,16 @@ void hal_timer3_pwm_init(uint32_t timer_periph, uint16_t channel, uint16_t presc
     timer_channel_output_mode_config(timer_periph, channel, TIMER_OC_MODE_PWM0);
 
     timer_enable(timer_periph);
+    LOG_DEBUG("timer enabled. period = %lu", sg_pwm_timer_period);
 }
 
-void hal_timer3_pwm_set_duty_cycle(uint32_t timer_periph, uint16_t channel, uint16_t duty_cycle) {
+void hal_timer_pwm_set_duty_cycle(uint32_t timer_periph, uint16_t channel, uint16_t duty_cycle) {
     LOG_DEBUG("duty_cycle = %d", duty_cycle)
     uint16_t compare_value = (sg_pwm_timer_period * duty_cycle) / 100;
     timer_channel_output_pulse_value_config(timer_periph, channel, compare_value);
+}
+
+void hal_timer_disable(uint32_t timer_periph) {
+    timer_disable(timer_periph);
 }
 
