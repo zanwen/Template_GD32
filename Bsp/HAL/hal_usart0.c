@@ -78,7 +78,7 @@ void hal_usart0_send_str(char *str) {
     }
 }
 
-uint8_t hal_usart0_get_char(void) {
+uint8_t hal_usart0_get_byte(void) {
     uint8_t data = 0;
     if (hal_usart0_isreadable()) {
         data = sg_rxbuf[sg_rxbuf_rindex++];

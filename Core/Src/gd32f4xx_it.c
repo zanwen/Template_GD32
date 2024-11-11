@@ -152,10 +152,7 @@ void SysTick_Handler(void) {
     delay_decrement();
 }
 void EXTI0_IRQHandler(void) {
-    if (RESET != exti_interrupt_flag_get(EXTI_0)) {
-        hal_exti0_handle_irq();
-        exti_interrupt_flag_clear(EXTI_0);
-    }
+    hal_exti0_handle_irq();
 }
 
 void EXTI2_IRQHandler(void) {

@@ -18,7 +18,7 @@ void hal_usart0_send_str(char *str);
 void hal_usart0_handle_irq(void);
 void hal_usart0_read_complete_callabck(callback_t callback);
 bool hal_usart0_isreadable(void);
-uint8_t hal_usart0_get_char(void);
+uint8_t hal_usart0_get_byte(void);
 uint16_t hal_usart0_read(uint8_t *buf, uint16_t bufsize);
 uint16_t hal_usart0_get_str(uint8_t *buf, uint16_t bufsize);
 
