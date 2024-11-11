@@ -7,6 +7,7 @@
 void on_read_complete(void);
 
 int main(void) {
+    NVIC_SetPriorityGrouping(NVIC_PRIGROUP_PRE2_SUB2);
     systick_config();
     retarget_init(USART0);
     hal_usart0_init();
@@ -19,9 +20,8 @@ int main(void) {
 }
 
 void on_read_complete(void) {
-    uint8_t buffer[64];
-    uint16_t rbytes = hal_usart0_get_str(buffer, 64);
-    LOG_DEBUG("rbytes = %d, buffer = %s", rbytes, buffer);
+    uint8_t cmd = hal_usart0_get_byte();
+    LOG_DEBUG("cmd: %#x", cmd);
 }
 
 void hal_exti0_callback(void) {
