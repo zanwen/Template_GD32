@@ -20,12 +20,9 @@ void gpio_config(void) {
     gpio_output_options_set(GPIOD, GPIO_OTYPE_PP, GPIO_OSPEED_MAX, GPIO_PIN_15);
     gpio_af_set(GPIOD, GPIO_AF_2, GPIO_PIN_15);
 
-    gpio_mode_set(GPIOD, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO_PIN_14);
-    gpio_output_options_set(GPIOD, GPIO_OTYPE_PP, GPIO_OSPEED_MAX, GPIO_PIN_14);
 
     gpio_bit_reset(GPIOC, GPIO_PIN_6);
     gpio_bit_reset(GPIOD, GPIO_PIN_15);
-    gpio_bit_reset(GPIOD, GPIO_PIN_14);
 }
 
 void hal_timer5_overflow_callback() {
@@ -53,6 +50,14 @@ int main(void) {
 
 void on_read_complete(void) {
     uint8_t cmd = hal_usart0_get_byte();
+    static uint8_t duty_cycle = 0;
     LOG_DEBUG("cmd: %#x", cmd)
+    if (cmd == 0x01) {
+        duty_cycle += 10;
+        if (duty_cycle > 100) {
+            duty_cycle = 0;
+        }
+        hal_timer3_pwm_set_duty_cycle(duty_cycle);
+    }
 }
 
