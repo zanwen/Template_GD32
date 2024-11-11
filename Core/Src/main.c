@@ -41,7 +41,7 @@ int main(void) {
     hal_usart0_read_complete_callabck(on_read_complete);
 
     gpio_config();
-    hal_timer3_pwm_init(TIMER3, 10, 1000);
+    hal_timer3_pwm_init(TIMER3, TIMER_CH_3, 10, 1000);
 
     while (1) {
         delay_1ms(1000);
@@ -57,7 +57,7 @@ void on_read_complete(void) {
         if (duty_cycle > 100) {
             duty_cycle = 0;
         }
-        hal_timer3_pwm_set_duty_cycle(duty_cycle);
+        hal_timer3_pwm_set_duty_cycle(TIMER3, TIMER_CH_3, duty_cycle);
     }
 }
 

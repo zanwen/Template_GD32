@@ -57,7 +57,7 @@ __attribute__((weak)) void hal_timer6_overflow_callback() {
 
 }
 
-void hal_timer3_pwm_init(uint32_t timer_periph, uint16_t prescaler, uint16_t target_freq) {
+void hal_timer3_pwm_init(uint32_t timer_periph, uint16_t channel, uint16_t prescaler, uint16_t target_freq) {
     rcu_periph_clock_enable(RCU_TIMER3);
 
     timer_deinit(timer_periph);
@@ -71,16 +71,16 @@ void hal_timer3_pwm_init(uint32_t timer_periph, uint16_t prescaler, uint16_t tar
     timer_init(timer_periph, &timer_initpara);
 
     // channel output
-    timer_channel_output_state_config(timer_periph, HAL_PWM_CHANNEL, TIMER_CCX_ENABLE);
-    timer_channel_output_pulse_value_config(timer_periph, HAL_PWM_CHANNEL, 0);
-    timer_channel_output_mode_config(timer_periph, HAL_PWM_CHANNEL, TIMER_OC_MODE_PWM0);
+    timer_channel_output_state_config(timer_periph, channel, TIMER_CCX_ENABLE);
+    timer_channel_output_pulse_value_config(timer_periph, channel, 0);
+    timer_channel_output_mode_config(timer_periph, channel, TIMER_OC_MODE_PWM0);
 
     timer_enable(timer_periph);
 }
 
-void hal_timer3_pwm_set_duty_cycle(uint16_t duty_cycle) {
+void hal_timer3_pwm_set_duty_cycle(uint32_t timer_periph, uint16_t channel, uint16_t duty_cycle) {
     LOG_DEBUG("duty_cycle = %d", duty_cycle)
     uint16_t compare_value = (sg_pwm_timer_period * duty_cycle) / 100;
-    timer_channel_output_pulse_value_config(TIMER3, HAL_PWM_CHANNEL, compare_value);
+    timer_channel_output_pulse_value_config(timer_periph, channel, compare_value);
 }
 
