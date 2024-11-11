@@ -16,10 +16,8 @@ void gpio_config(void) {
     gpio_output_options_set(GPIOC, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_6);
 
     // 配置PD15为推挽输出
-    gpio_mode_set(GPIOD, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO_PIN_15);
+    gpio_mode_set(GPIOD, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO_PIN_15);
     gpio_output_options_set(GPIOD, GPIO_OTYPE_PP, GPIO_OSPEED_MAX, GPIO_PIN_15);
-    gpio_af_set(GPIOD, GPIO_AF_2, GPIO_PIN_15);
-
     gpio_mode_set(GPIOD, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO_PIN_14);
     gpio_output_options_set(GPIOD, GPIO_OTYPE_PP, GPIO_OSPEED_MAX, GPIO_PIN_14);
 
@@ -44,7 +42,11 @@ int main(void) {
     hal_usart0_read_complete_callabck(on_read_complete);
 
     gpio_config();
-    hal_timer3_pwm_init(TIMER3, 10, 1000);
+    hal_timer_basic_init(TIMER5, 10, 2000);
+    LOG_DEBUG("timer5 start!")
+
+    hal_timer_basic_init(TIMER6, 10, 1000);
+    LOG_DEBUG("timer6 start!")
 
     while (1) {
         delay_1ms(1000);

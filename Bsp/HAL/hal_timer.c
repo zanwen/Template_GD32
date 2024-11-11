@@ -6,7 +6,7 @@
 #include "logger.h"
 
 
-void hal_timer_basic_init(uint32_t timer_periph, uint8_t prescaler, uint16_t target_frequency) {
+void hal_timer_basic_init(uint32_t timer_periph, uint16_t prescaler, uint16_t target_frequency) {
     if (timer_periph != TIMER5 && timer_periph != TIMER6) {
         LOG_ERROR("timer_periph must be TIMER5 or TIMER6! ")
         return;
@@ -53,5 +53,26 @@ void hal_tim6_dac_irqhandler(void) {
 
 __attribute__((weak)) void hal_timer6_overflow_callback() {
 
+}
+
+void hal_timer3_pwm_init(uint32_t timer_periph, uint16_t prescaler, uint16_t target_freq) {
+    rcu_periph_clock_enable(RCU_TIMER3);
+
+    timer_deinit(timer_periph);
+    rcu_timer_clock_prescaler_config(RCU_TIMER_PSC_MUL4);
+
+    uint32_t counter_max = SystemCoreClock / prescaler / target_freq - 1;
+    timer_parameter_struct timer_initpara;
+    timer_struct_para_init(&timer_initpara);
+    timer_initpara.prescaler = prescaler - 1;
+    timer_initpara.period = counter_max;
+    timer_init(timer_periph, &timer_initpara);
+
+    // channel output
+    timer_channel_output_state_config(timer_periph, HAL_PWM_CHANNEL, TIMER_CCX_ENABLE);
+    timer_channel_output_pulse_value_config(timer_periph, HAL_PWM_CHANNEL, counter_max * 0.3);
+    timer_channel_output_mode_config(timer_periph, HAL_PWM_CHANNEL, TIMER_OC_MODE_PWM0);
+
+    timer_enable(timer_periph);
 }
 
