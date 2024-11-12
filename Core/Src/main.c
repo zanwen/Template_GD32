@@ -28,7 +28,7 @@ void on_read_complete(void) {
     if (cmd == 0x01) {
 //        int_buzzer_buzz(1000,500);
 //        int_buzzer_stop();
-        int_buzzer_demo();
+        int_buzzer_playdemo();
     }
 }
 

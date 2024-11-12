@@ -22,6 +22,6 @@ void int_buzzer_buzz(uint16_t frequency, uint16_t duration);
 
 void int_buzzer_stop(void);
 
-void int_buzzer_demo();
+void int_buzzer_playdemo();
 
 #endif //INT_BUZZER_H

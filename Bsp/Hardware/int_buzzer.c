@@ -49,7 +49,7 @@ void int_buzzer_stop(void) {
 }
 
 
-void int_buzzer_demo() {
+void int_buzzer_playdemo() {
     uint16_t i;
     uint16_t len = sizeof(notes) / sizeof(notes[0]);
 
