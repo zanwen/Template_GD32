@@ -1,0 +1,69 @@
+#include "hal_usart0.h"
+#include "logger.h"
+#include "retarget.h"
+#include "systick.h"
+#include "hal_timer.h"
+
+void on_read_complete(void);
+
+void dma1_memcpy();
+
+void dma1_init() {
+    rcu_periph_clock_enable(RCU_DMA1);
+    dma_deinit(DMA1, DMA_CH0);
+
+    dma_single_data_parameter_struct dma_init_struct;
+    dma_single_data_para_struct_init(&dma_init_struct);
+    dma_init_struct.direction = DMA_MEMORY_TO_MEMORY;
+    dma_init_struct.periph_memory_width = DMA_PERIPH_WIDTH_8BIT;
+    dma_init_struct.periph_inc = DMA_PERIPH_INCREASE_ENABLE;
+    dma_init_struct.memory_inc = DMA_MEMORY_INCREASE_ENABLE;
+    dma_init_struct.priority = DMA_PRIORITY_LOW;
+    dma_init_struct.circular_mode = DMA_CIRCULAR_MODE_DISABLE;
+
+    dma_single_data_mode_init(DMA1, DMA_CH0, &dma_init_struct);
+}
+
+void dma1_memcpy(uint32_t src, uint32_t dest, uint32_t byte_size) {
+    dma_periph_address_config(DMA1, DMA_CH0,  src);
+    dma_memory_address_config(DMA1, DMA_CH0, 0, dest);
+    dma_transfer_number_config(DMA1, DMA_CH0, byte_size);
+    dma_channel_enable(DMA1, DMA_CH0);
+    while (dma_flag_get(DMA1, DMA_CH0, DMA_FLAG_FTF) == RESET) {
+    }
+    dma_flag_clear(DMA1, DMA_CH0, DMA_FLAG_FTF);
+}
+
+char str[100] = "hello, dma=================";
+char buffer[100] = {0};
+
+int main(void) {
+    NVIC_SetPriorityGrouping(NVIC_PRIGROUP_PRE2_SUB2);
+    systick_config();
+    retarget_init(USART0);
+    hal_usart0_init();
+    hal_usart0_read_complete_callabck(on_read_complete);
+
+    hal_dma1_init();
+
+    LOG_DEBUG("before dma, buffer = %s", buffer);
+    hal_dma1_memcpy((uint32_t)str, (uint32_t)buffer, sizeof(str) / sizeof(str[0]));
+    LOG_DEBUG("after dma, buffer = %s", buffer);
+
+    while (1) {
+    }
+}
+
+void on_read_complete(void) {
+    uint8_t cmd = hal_usart0_get_byte();
+    static uint8_t duty_cycle = 0;
+    LOG_DEBUG("cmd: %#x", cmd)
+    if (cmd == 0x01) {
+        duty_cycle += 10;
+        if (duty_cycle > 100) {
+            duty_cycle = 0;
+        }
+        hal_timer_pwm_set_duty_cycle(TIMER0, TIMER_CH_0, 1000, duty_cycle);
+    }
+}
+

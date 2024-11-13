@@ -58,5 +58,6 @@ void PendSV_Handler(void);
 void SysTick_Handler(void);
 void USART1_IRQHandler(void);
 void EXTI0_IRQHandler(void);
+void DMA2_Stream0_IRQHandler(void);
 
 #endif /* GD32F4XX_IT_H */

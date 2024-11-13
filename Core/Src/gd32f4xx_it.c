@@ -41,6 +41,11 @@ extern void hal_exti0_handle_irq(void);
 extern void hal_exti2_handle_irq(void);
 extern void hal_tim5_dac_irqhandler(void);
 extern void hal_tim6_dac_irqhandler(void);
+extern void hal_dma1_irq_handler(void);
+
+void DMA2_Stream0_IRQHandler(void) {
+    hal_dma1_irq_handler();
+}
 
 
 void USART1_IRQHandler(void) {

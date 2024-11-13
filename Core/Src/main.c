@@ -3,22 +3,9 @@
 #include "retarget.h"
 #include "systick.h"
 #include "hal_timer.h"
+#include "hal_dma.h"
 
 void on_read_complete(void);
-
-static void gpio_init(void) {
-    // 启用 GPIOE 时钟
-    rcu_periph_clock_enable(RCU_GPIOE);
-
-    // 配置 PE8 和 PE9 为复用功能
-    gpio_mode_set(GPIOE, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO_PIN_8 | GPIO_PIN_9);
-
-    // 设置为推挽输出
-    gpio_output_options_set(GPIOE, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_8 | GPIO_PIN_9);
-
-    // 设置复用功能为 AF1
-    gpio_af_set(GPIOE, GPIO_AF_1, GPIO_PIN_8 | GPIO_PIN_9);
-}
 
 int main(void) {
     NVIC_SetPriorityGrouping(NVIC_PRIGROUP_PRE2_SUB2);
@@ -27,26 +14,22 @@ int main(void) {
     hal_usart0_init();
     hal_usart0_read_complete_callabck(on_read_complete);
 
-    gpio_init();
-    // Tiemr3 PWM CH0~3
-    hal_timer_init(RCU_TIMER0, TIMER0, 1000);
-    hal_timer_pwm_channel_enable(TIMER0, TIMER_CH_0, true);
+    hal_dma1_init();
 
     while (1) {
-        delay_1ms(1000);
     }
 }
+
+uint8_t rxbuf[128] = {0};
+uint8_t txbuf[128] = {0};
 
 void on_read_complete(void) {
-    uint8_t cmd = hal_usart0_get_byte();
-    static uint8_t duty_cycle = 0;
-    LOG_DEBUG("cmd: %#x", cmd)
-    if (cmd == 0x01) {
-        duty_cycle += 10;
-        if (duty_cycle > 100) {
-            duty_cycle = 0;
-        }
-        hal_timer_pwm_set_duty_cycle(TIMER0, TIMER_CH_0, 1000, duty_cycle);
-    }
+    hal_usart0_get_str(rxbuf, sizeof(rxbuf));
+    LOG_DEBUG("receive msg from USART0: %s", rxbuf);
+    LOG_DEBUG("before DMA: txbuf = %s", txbuf)
+    hal_dma1_memcpy((uint32_t) rxbuf, (uint32_t) txbuf, sizeof(rxbuf));
 }
 
+void hal_dma1_callback(void) {
+    LOG_DEBUG("after DMA: txbuf = %s", txbuf)
+}
