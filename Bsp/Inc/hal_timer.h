@@ -13,8 +13,12 @@ void hal_timer_basic_init(uint32_t timer_periph, uint16_t prescaler, uint16_t ta
 void hal_timer5_overflow_callback();
 void hal_timer6_overflow_callback();
 
-void hal_timer_pwm_init(rcu_periph_enum periph_clk, uint32_t timer_periph, uint16_t channel, uint16_t prescaler, uint16_t target_freq);
-void hal_timer_pwm_set_duty_cycle(uint32_t timer_periph, uint16_t channel, uint16_t duty_cycle);
+void hal_timer_pwm_init(rcu_periph_enum periph_clk, uint32_t timer_periph, uint16_t channel,
+                        uint16_t prescaler, uint16_t period);
+void hal_timer_pwm_set_duty_cycle(uint32_t timer_periph, uint16_t channel,
+                                  uint16_t period, uint16_t duty_cycle);
+void hal_timer_pwm_set_period(uint32_t timer_periph, uint16_t prescaler, uint16_t period);
 void hal_timer_disable(uint32_t timer_periph);
+void hal_timer_enable(uint32_t timer_periph);
 
 #endif //HAL_TIMER_H

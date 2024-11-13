@@ -14,11 +14,16 @@
 #define INT_BUZZER_TIMER TIMER1
 #define INT_BUZZER_TIMER_CH TIMER_CH_1
 
+#define INT_BUZZER_PWM_PRESCALER 10
+#define INT_BUZZER_PWM_INIT_PERIOD 1000
+
+void int_buzzer_init(void);
+
 #include "gd32f4xx.h"
 
 void int_buzzer_init(void);
 
-void int_buzzer_buzz(uint16_t frequency, uint16_t duration);
+void int_buzzer_buzz(uint16_t period, uint16_t duration);
 
 void int_buzzer_stop(void);
 

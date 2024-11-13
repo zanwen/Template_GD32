@@ -5,8 +5,6 @@
 #include "hal_timer.h"
 #include "logger.h"
 
-static uint32_t sg_pwm_timer_period = 0;
-
 
 void hal_timer_basic_init(uint32_t timer_periph, uint16_t prescaler, uint16_t target_frequency) {
     if (timer_periph != TIMER5 && timer_periph != TIMER6) {
@@ -57,17 +55,16 @@ __attribute__((weak)) void hal_timer6_overflow_callback() {
 
 }
 
-void hal_timer_pwm_init(rcu_periph_enum periph_clk, uint32_t timer_periph, uint16_t channel, uint16_t prescaler, uint16_t target_freq) {
+void hal_timer_pwm_init(rcu_periph_enum periph_clk, uint32_t timer_periph, uint16_t channel, uint16_t prescaler, uint16_t period) {
     rcu_periph_clock_enable(periph_clk);
 
     timer_deinit(timer_periph);
     rcu_timer_clock_prescaler_config(RCU_TIMER_PSC_MUL4);
 
-    sg_pwm_timer_period = SystemCoreClock / prescaler / target_freq - 1;
     timer_parameter_struct timer_initpara;
     timer_struct_para_init(&timer_initpara);
     timer_initpara.prescaler = prescaler - 1;
-    timer_initpara.period = sg_pwm_timer_period;
+    timer_initpara.period = period;
     timer_init(timer_periph, &timer_initpara);
 
     // channel output
@@ -76,16 +73,26 @@ void hal_timer_pwm_init(rcu_periph_enum periph_clk, uint32_t timer_periph, uint1
     timer_channel_output_mode_config(timer_periph, channel, TIMER_OC_MODE_PWM0);
 
     timer_enable(timer_periph);
-    LOG_DEBUG("timer enabled. period = %lu", sg_pwm_timer_period);
+    LOG_DEBUG("timer enabled. period = %d", period);
 }
 
-void hal_timer_pwm_set_duty_cycle(uint32_t timer_periph, uint16_t channel, uint16_t duty_cycle) {
+void hal_timer_pwm_set_duty_cycle(uint32_t timer_periph, uint16_t channel,
+                                  uint16_t period, uint16_t duty_cycle) {
     LOG_DEBUG("duty_cycle = %d", duty_cycle)
-    uint16_t compare_value = (sg_pwm_timer_period * duty_cycle) / 100;
+    uint16_t compare_value = (period * duty_cycle) / 100;
     timer_channel_output_pulse_value_config(timer_periph, channel, compare_value);
 }
 
 void hal_timer_disable(uint32_t timer_periph) {
     timer_disable(timer_periph);
+}
+
+void hal_timer_pwm_set_period(uint32_t timer_periph, uint16_t prescaler, uint16_t period) {
+    timer_prescaler_config(timer_periph, prescaler, TIMER_PSC_RELOAD_NOW);
+    timer_autoreload_value_config(timer_periph, period);
+}
+
+void hal_timer_enable(uint32_t timer_periph) {
+    timer_enable(timer_periph);
 }
 

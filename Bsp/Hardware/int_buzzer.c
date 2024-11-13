@@ -24,7 +24,7 @@ static uint8_t durations[] = {
         3, 1, 3, 1, 4, 4, 3, 1, 3, 1, 4, 4, 4, 4, 8, 4, 4, 8
 };
 
-void int_buzzer_init(void) {
+static void gpio_init() {
     rcu_periph_clock_enable(INT_BUZZER_GPIO_RCU);
 
     gpio_mode_set(INT_BUZZER_GPIO_PORT, GPIO_MODE_AF, GPIO_PUPD_NONE, INT_BUZZER_GPIO_PIN);
@@ -34,11 +34,20 @@ void int_buzzer_init(void) {
     gpio_bit_reset(INT_BUZZER_GPIO_PORT, INT_BUZZER_GPIO_PIN);
 }
 
-void int_buzzer_buzz(uint16_t frequency, uint16_t duration) {
+void int_buzzer_init(void) {
+    gpio_init();
     hal_timer_pwm_init(INT_BUZZER_TIMER_RCU, INT_BUZZER_TIMER,
-                       INT_BUZZER_TIMER_CH, 10, frequency);
+                       INT_BUZZER_TIMER_CH, INT_BUZZER_PWM_PRESCALER,
+                       INT_BUZZER_PWM_INIT_PERIOD);
+}
+
+void int_buzzer_buzz(uint16_t freq, uint16_t duration) {
+    uint16_t period = SystemCoreClock / (INT_BUZZER_PWM_PRESCALER * freq) - 1;
+    hal_timer_pwm_set_period(
+            INT_BUZZER_TIMER, INT_BUZZER_PWM_PRESCALER, period);
     hal_timer_pwm_set_duty_cycle(
-            INT_BUZZER_TIMER, INT_BUZZER_TIMER_CH, 50);
+            INT_BUZZER_TIMER, INT_BUZZER_TIMER_CH, period, 50);
+    hal_timer_enable(INT_BUZZER_TIMER);
     if (duration) {
         delay_1ms(duration);
     }
