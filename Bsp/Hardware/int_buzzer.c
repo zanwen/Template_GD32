@@ -2,6 +2,7 @@
 // Created by 86157 on 2024/11/11.
 //
 
+#include <stdbool.h>
 #include "int_buzzer.h"
 #include "hal_timer.h"
 #include "systick.h"
@@ -36,16 +37,15 @@ static void gpio_init() {
 
 void int_buzzer_init(void) {
     gpio_init();
-    hal_timer_init(INT_BUZZER_TIMER_RCU, INT_BUZZER_TIMER,
-                   INT_BUZZER_PWM_PRESCALER,INT_BUZZER_PWM_INIT_PERIOD);
-    hal_timer_pwm_channel_enable(INT_BUZZER_TIMER, INT_BUZZER_TIMER_CH);
+    hal_timer_init(INT_BUZZER_TIMER_RCU,
+                   INT_BUZZER_TIMER, INT_BUZZER_PWM_INIT_FREQ);
+    hal_timer_pwm_channel_enable(INT_BUZZER_TIMER, INT_BUZZER_TIMER_CH, false);
 }
 
 void int_buzzer_buzz(uint16_t freq, uint16_t duration) {
-    hal_timer_pwm_set_freq(INT_BUZZER_TIMER,
-                           INT_BUZZER_PWM_PRESCALER, freq);
+    hal_timer_pwm_set_freq(INT_BUZZER_TIMER, freq);
     hal_timer_pwm_set_duty_cycle(INT_BUZZER_TIMER, INT_BUZZER_TIMER_CH,
-                                 INT_BUZZER_PWM_PRESCALER, freq, 50);
+                                 freq, 50);
     hal_timer_enable(INT_BUZZER_TIMER);
     if (duration) {
         delay_1ms(duration);
