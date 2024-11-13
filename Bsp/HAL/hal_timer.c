@@ -81,7 +81,15 @@ void hal_timer_pwm_channel_enable(uint32_t timer_periph, uint16_t channel, bool 
         // 启用互补输出
         timer_channel_complementary_output_state_config(timer_periph, channel, TIMER_CCXN_ENABLE);
         // 启用自动输出
-        timer_automatic_output_enable(timer_periph);
+        //timer_automatic_output_enable(timer_periph);
+        timer_break_parameter_struct breakpara;
+        timer_break_struct_para_init(&breakpara);
+        breakpara.breakpolarity = TIMER_BREAK_POLARITY_HIGH;
+        breakpara.outputautostate = TIMER_OUTAUTO_ENABLE;
+        breakpara.deadtime = 100;
+        breakpara.breakstate = TIMER_BREAK_ENABLE;
+        timer_break_config(timer_periph, &breakpara);
+        timer_break_enable(timer_periph);
     }
 }
 
