@@ -44,7 +44,7 @@ int main(void) {
     hal_usart0_read_complete_callabck(on_read_complete);
 
     gpio_config();
-    hal_timer_pwm_init(TIMER3, 10, 1000);
+    hal_timer_init(TIMER3, 10, 1000);
 
     while (1) {
         delay_1ms(1000);
