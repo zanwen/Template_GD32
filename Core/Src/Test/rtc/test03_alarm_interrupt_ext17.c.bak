@@ -3,7 +3,7 @@
 #include "retarget.h"
 #include "systick.h"
 #include "hal_timer.h"
-#include "hal_wdgt.h"
+#include "hal_rtc.h"
 
 #define BUF_SIZE 100
 
@@ -18,17 +18,12 @@ int main(void) {
     hal_usart0_init();
     hal_usart0_read_complete_callabck(on_read_complete);
 
-    hal_fwdgt_init(2000);
-    LOG_DEBUG("main start")
-
+    hal_rtc_init();
+    hal_rtc_clock_setup();
+    hal_rtc_alarm_setup();
     while (1) {
-        for (int i = 0; i < 20; ++i) {
-            delay_1ms(100);
-            LOG_DEBUG("i = %d", i);
-            if (i == 16) {
-                hal_fwdgt_reload();
-            }
-        }
+        hal_rtc_clock_read();
+        delay_1ms(1000);
     }
 }
 
