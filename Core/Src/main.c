@@ -5,11 +5,11 @@
 #include "hal_timer.h"
 #include "hal_dma.h"
 
+#define BUF_SIZE 100
+
 void on_read_complete(void);
 
-void hal_dma1_m2uart_callback(void) {
-    LOG_DEBUG("callback, usart tx with dma done")
-}
+uint8_t buf[BUF_SIZE] = {0};
 
 int main(void) {
     NVIC_SetPriorityGrouping(NVIC_PRIGROUP_PRE2_SUB2);
@@ -17,15 +17,16 @@ int main(void) {
     retarget_init(USART0);
     hal_usart0_init();
     hal_usart0_read_complete_callabck(on_read_complete);
-
-    hal_dma1_m2uart_init();
-    char buffer[100] = "hello, uart with dma!\n";
-    hal_dma1_m2uart_cpy((uint32_t) buffer, strlen(buffer));
+    
+    hal_dma1_usart2m_init((uint32_t) buf, BUF_SIZE);
 
     while (1) {
     }
 }
 
 void on_read_complete(void) {
-
+    uint32_t remaining = hal_dma1_usart2m_stop();
+    buf[BUF_SIZE - remaining] = 0;
+    LOG_DEBUG("buf = %s", buf)
+    hal_dma1_usart2m_restart();
 }
