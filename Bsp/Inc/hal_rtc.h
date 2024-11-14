@@ -8,7 +8,8 @@
 #include "gd32f4xx.h"
 
 void hal_rtc_init(void);
-void hal_rtc_read(void);
-void hal_rtc_write(void);
+void hal_rtc_clock_read(void);
+void hal_rtc_clock_setup(void);
+void hal_rtc_alarm_setup(void);
 
 #endif //HAL_RTC_H

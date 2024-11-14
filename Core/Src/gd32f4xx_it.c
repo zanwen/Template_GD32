@@ -44,6 +44,15 @@ extern void hal_tim6_dac_irqhandler(void);
 extern void hal_dma1_ch0_irqhandler(void);
 extern void hal_dma1_ch7_irqhandler(void);
 
+void RTC_Alarm_IRQHandler(void) {
+    if (rtc_flag_get(RTC_FLAG_ALRM0) == SET &&
+            exti_interrupt_flag_get(EXTI_17) == SET) {
+        rtc_flag_clear(RTC_FLAG_ALRM0);
+        exti_interrupt_flag_clear(EXTI_17);
+        LOG_DEBUG("RTC_Alarm_IRQHandler invoke")
+    }
+}
+
 void DMA2_Stream0_IRQHandler(void) {
     hal_dma1_ch0_irqhandler();
 }

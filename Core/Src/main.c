@@ -19,9 +19,10 @@ int main(void) {
     hal_usart0_read_complete_callabck(on_read_complete);
 
     hal_rtc_init();
-    hal_rtc_write();
+    hal_rtc_clock_setup();
+    hal_rtc_alarm_setup();
     while (1) {
-        hal_rtc_read();
+        hal_rtc_clock_read();
         delay_1ms(1000);
     }
 }
