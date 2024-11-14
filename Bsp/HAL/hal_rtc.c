@@ -112,6 +112,7 @@ void hal_rtc_alarm_setup(void) {
     rtc_flag_clear(RTC_FLAG_ALRM0);
     rtc_interrupt_enable(RTC_INT_ALARM0);
     // 启用EXT17（默认对接RTC闹钟中断标志)，为中断向量回调提供支持
+    // 可以将RTC中断信号类比按键输入信号来理解，中断发送时RTC_FLAG_ALRM0被置1（类比按键按下），EXT17感知到上升沿，触发NVIC中断回调
     exti_init(EXTI_17, EXTI_INTERRUPT, EXTI_TRIG_RISING);
     exti_interrupt_flag_clear(EXTI_17);
     exti_interrupt_enable(EXTI_17);
