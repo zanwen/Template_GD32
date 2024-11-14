@@ -108,13 +108,15 @@ void hal_rtc_alarm_setup(void) {
     // 配置闹钟
     rtc_alarm_config(RTC_ALARM0, &rtc_alarm);
 
-    // 配置闹钟中断
-    exti_init(EXTI_17, EXTI_INTERRUPT, EXTI_TRIG_RISING);
-    exti_interrupt_enable(EXTI_17);
-    exti_interrupt_flag_clear(EXTI_17);
-    nvic_irq_enable(RTC_Alarm_IRQn, 2, 0);
-    rtc_interrupt_enable(RTC_INT_ALARM0);// 启用NVIC中的RTC中断
+    // 配置闹钟中断（触发闹钟时会设置RTC内部中断标志)
     rtc_flag_clear(RTC_FLAG_ALRM0);
+    rtc_interrupt_enable(RTC_INT_ALARM0);
+    // 启用EXT17（默认对接RTC闹钟中断标志)，为中断向量回调提供支持
+    exti_init(EXTI_17, EXTI_INTERRUPT, EXTI_TRIG_RISING);
+    exti_interrupt_flag_clear(EXTI_17);
+    exti_interrupt_enable(EXTI_17);
+    // 注册中断向量
+    nvic_irq_enable(RTC_Alarm_IRQn, 2, 0);
 
     // 开启闹钟
     rtc_alarm_enable(RTC_ALARM0);
