@@ -34,7 +34,7 @@ void hal_dma1_m2m_cpy(uint32_t src_addr, uint32_t dest_addr, uint32_t byte_size)
     dma_channel_enable(HAL_DMA1_M2M_CH);
 }
 
-void hal_dma1_irq_handler(void) {
+void hal_dma1_ch0_irqhandler(void) {
     if (dma_interrupt_flag_get(HAL_DMA1_M2M_CH, DMA_INT_FLAG_FTF) == SET) {
         hal_dma1_m2m_callback();
         dma_interrupt_flag_clear(HAL_DMA1_M2M_CH, DMA_FLAG_FTF);
@@ -62,10 +62,24 @@ void hal_dma1_m2uart_init() {
 
     usart_dma_transmit_config(USART0, USART_TRANSMIT_DMA_ENABLE);
     dma_channel_subperipheral_select(HAL_DMA1_M2USART0_CH, DMA_SUBPERI4);
+
+    nvic_irq_enable(DMA1_Channel7_IRQn, 1, 0);
+    dma_interrupt_enable(HAL_DMA1_M2USART0_CH, DMA_INT_FTF);
 }
 
 void hal_dma1_m2uart_cpy(uint32_t addr, uint32_t byte_size) {
     dma_memory_address_config(HAL_DMA1_M2USART0_CH, DMA_MEMORY_0, addr);
     dma_transfer_number_config(HAL_DMA1_M2USART0_CH, byte_size);
     dma_channel_enable(HAL_DMA1_M2USART0_CH);
+}
+
+void hal_dma1_ch7_irqhandler(void) {
+    if (dma_interrupt_flag_get(HAL_DMA1_M2USART0_CH, DMA_INT_FLAG_FTF) == SET) {
+        hal_dma1_m2uart_callback();
+        dma_interrupt_flag_clear(HAL_DMA1_M2USART0_CH, DMA_FLAG_FTF);
+    }
+}
+
+__attribute__((weak)) void hal_dma1_m2uart_callback(void) {
+
 }

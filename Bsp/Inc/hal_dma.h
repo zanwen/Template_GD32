@@ -13,5 +13,5 @@ void hal_dma1_m2m_callback(void);
 
 void hal_dma1_m2uart_init();
 void hal_dma1_m2uart_cpy(uint32_t addr, uint32_t byte_size);
-
+void hal_dma1_m2uart_callback(void);
 #endif //HAL_DMA_H
