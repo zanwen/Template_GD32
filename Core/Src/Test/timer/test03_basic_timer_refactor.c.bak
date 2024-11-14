@@ -45,7 +45,7 @@ int main(void) {
     hal_timer_basic_init(TIMER5, 10, 2000);
     LOG_DEBUG("timer5 start!")
 
-    hal_timer_basic_init(TIMER6, 10, 1000);
+    hal_timer_basic_start(TIMER6, 10, 1000);
     LOG_DEBUG("timer6 start!")
 
     while (1) {

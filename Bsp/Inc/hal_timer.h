@@ -12,7 +12,7 @@
 
 #include "gd32f4xx.h"
 
-void hal_timer_basic_init(uint32_t timer_periph, uint16_t freq);
+void hal_timer_basic_start(uint32_t timer_periph, uint16_t freq);
 
 void hal_timer5_overflow_callback();
 

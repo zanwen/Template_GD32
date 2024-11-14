@@ -7,7 +7,7 @@
 #include "logger.h"
 
 
-void hal_timer_basic_init(uint32_t timer_periph, uint16_t freq) {
+void hal_timer_basic_start(uint32_t timer_periph, uint16_t freq) {
     if (timer_periph != TIMER5 && timer_periph != TIMER6) {
         LOG_ERROR("timer_periph must be TIMER5 or TIMER6! ")
         return;
@@ -67,9 +67,6 @@ void hal_timer_init(rcu_periph_enum periph_clk, uint32_t timer_periph, uint16_t 
     timer_initpara.prescaler = HAL_TIMER_PRESCALER - 1;
     timer_initpara.period = SystemCoreClock / HAL_TIMER_PRESCALER / freq - 1;
     timer_init(timer_periph, &timer_initpara);
-
-    timer_enable(timer_periph);
-    LOG_DEBUG("timer enabled. freq = %d", freq);
 }
 
 void hal_timer_pwm_channel_enable(uint32_t timer_periph, uint16_t channel, bool complementary) {
@@ -90,6 +87,9 @@ void hal_timer_pwm_channel_enable(uint32_t timer_periph, uint16_t channel, bool 
         breakpara.breakstate = TIMER_BREAK_ENABLE;
         timer_break_config(timer_periph, &breakpara);
         timer_break_enable(timer_periph);
+    }
+    if (timer_periph == TIMER0 || timer_periph == TIMER7) {
+        timer_primary_output_config(timer_periph, ENABLE);
     }
 }
 

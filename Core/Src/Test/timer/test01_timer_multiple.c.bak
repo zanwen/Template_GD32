@@ -61,7 +61,7 @@ int main(void) {
     gpio_config();
     LOG_DEBUG("before timer5_config")
     timer5_config();
-    LOG_DEBUG("after hal_timer_basic_init")
+    LOG_DEBUG("after hal_timer_basic_start")
 
     while (1) {
         delay_1ms(1000);
