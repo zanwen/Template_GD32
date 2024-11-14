@@ -7,8 +7,11 @@
 
 #include "gd32f4xx.h"
 
-void hal_dma1_init();
-void hal_dma1_memcpy(uint32_t src, uint32_t dest, uint32_t byte_size);
-void hal_dma1_callback(void);
+void hal_dma1_m2m_init();
+void hal_dma1_m2m_cpy(uint32_t src_addr, uint32_t dest_addr, uint32_t byte_size);
+void hal_dma1_m2m_callback(void);
+
+void hal_dma1_m2uart_init();
+void hal_dma1_m2uart_cpy(uint32_t addr, uint32_t byte_size);
 
 #endif //HAL_DMA_H

@@ -50,7 +50,7 @@ int main(void) {
     hal_usart0_read_complete_callabck(on_read_complete);
 
     LOG_DEBUG("before dma, buffer = %s", buffer);
-    hal_dma1_init((uint32_t)src, (uint32_t)buffer, 100);
+    hal_dma1_m2m_init((uint32_t)src, (uint32_t)buffer, 100);
     LOG_DEBUG("after dma, buffer = %s", buffer);
 
     while (1) {

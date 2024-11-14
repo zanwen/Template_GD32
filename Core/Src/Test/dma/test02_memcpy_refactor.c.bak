@@ -44,10 +44,10 @@ int main(void) {
     hal_usart0_init();
     hal_usart0_read_complete_callabck(on_read_complete);
 
-    hal_dma1_init();
+    hal_dma1_m2m_init();
 
     LOG_DEBUG("before dma, buffer = %s", buffer);
-    hal_dma1_memcpy((uint32_t)str, (uint32_t)buffer, sizeof(str) / sizeof(str[0]));
+    hal_dma1_m2m_cpy((uint32_t)str, (uint32_t)buffer, sizeof(str) / sizeof(str[0]));
     LOG_DEBUG("after dma, buffer = %s", buffer);
 
     while (1) {

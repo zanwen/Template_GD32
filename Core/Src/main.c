@@ -14,22 +14,16 @@ int main(void) {
     hal_usart0_init();
     hal_usart0_read_complete_callabck(on_read_complete);
 
-    hal_dma1_init();
+    hal_dma1_m2uart_init();
+    char buffer[100] = "hello, uart with dma!\n";
+    hal_dma1_m2uart_cpy((uint32_t) buffer, strlen(buffer));
+    while (dma_flag_get(DMA1, DMA_CH7, DMA_FLAG_FTF) == RESET);
+    LOG_DEBUG("usart tx with dma done")
 
     while (1) {
     }
 }
 
-uint8_t rxbuf[128] = {0};
-uint8_t txbuf[128] = {0};
-
 void on_read_complete(void) {
-    hal_usart0_get_str(rxbuf, sizeof(rxbuf));
-    LOG_DEBUG("receive msg from USART0: %s", rxbuf);
-    LOG_DEBUG("before DMA: txbuf = %s", txbuf)
-    hal_dma1_memcpy((uint32_t) rxbuf, (uint32_t) txbuf, sizeof(rxbuf));
-}
 
-void hal_dma1_callback(void) {
-    LOG_DEBUG("after DMA: txbuf = %s", txbuf)
 }
