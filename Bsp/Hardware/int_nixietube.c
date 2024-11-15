@@ -54,7 +54,6 @@ uint8_t s_code_table[] = {
     0xC1
 };
 
-uint8_t num_table[] = { 0xFE, 0xFD, 0xFB, 0xF7, 0xEF, 0xDF, 0xBF, 0x7F };
 
 static void clear_buffer() {
     uint8_t i;
@@ -70,50 +69,67 @@ void Int_NixieTube_Init() {
     gpio_mode_set(NIX_RCK_PORT, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, NIX_RCK_PIN);
     gpio_mode_set(NIX_SCK_PORT, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, NIX_SCK_PIN);
 
-    gpio_output_options_set(NIX_DI_PORT, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, NIX_DI_PIN);
-    gpio_output_options_set(NIX_RCK_PORT, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, NIX_RCK_PIN);
-    gpio_output_options_set(NIX_SCK_PORT, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, NIX_SCK_PIN);
+    gpio_output_options_set(NIX_DI_PORT, GPIO_OTYPE_PP, GPIO_OSPEED_MAX, NIX_DI_PIN);
+    gpio_output_options_set(NIX_RCK_PORT, GPIO_OTYPE_PP, GPIO_OSPEED_MAX, NIX_RCK_PIN);
+    gpio_output_options_set(NIX_SCK_PORT, GPIO_OTYPE_PP, GPIO_OSPEED_MAX, NIX_SCK_PIN);
 
     clear_buffer();
+}
+
+//static void shift(uint8_t data) {
+//    for (uint8_t i = 0; i < 8; ++i) {
+//        gpio_bit_write(NIX_DI_PORT, NIX_DI_PIN, (data & (0x80 >> i)) ? SET : RESET);
+//        gpio_bit_write(NIX_SCK_PORT, NIX_SCK_PIN, RESET);
+////        __NOP();
+//        gpio_bit_write(NIX_SCK_PORT, NIX_SCK_PIN, SET);
+////        __NOP();
+//    }
+//}
+//
+//static void rck_action() {
+//    gpio_bit_write(NIX_RCK_PORT, NIX_RCK_PIN, RESET);
+////    __NOP();
+//    gpio_bit_write(NIX_RCK_PORT, NIX_RCK_PIN, SET);
+////    __NOP();
+//}
+
+static void shift(uint8_t data) {
+    for (uint8_t i = 0; i < 8; ++i) {
+        gpio_bit_write(NIX_DI_PORT, NIX_DI_PIN, (data & (0x80 >> i)) ? SET : RESET);
+        delay_1us(1);
+        gpio_bit_reset(NIX_SCK_PORT, NIX_SCK_PIN);
+        delay_1us(1);
+        gpio_bit_set(NIX_SCK_PORT, NIX_SCK_PIN);
+        delay_1us(1);
+    }
+}
+
+static void rck_action() {
+    gpio_bit_reset(NIX_RCK_PORT, NIX_RCK_PIN);
+    delay_1us(1);
+    gpio_bit_set(NIX_RCK_PORT, NIX_RCK_PIN);
+    delay_1us(1);
 }
 
 // chip selection: from 0 to 7
 // seg_code: segment selection code
 void Int_NixieTube_DisplaySingle(uint8_t chip, uint8_t seg_code) {
-    char i;
-    uint8_t chip_code = 1 << chip;
-
-    // MSB most significant first
-    // segment selection for displaying number
-    for (i = 7; i >= 0; i--) {
-        gpio_bit_write(NIX_DI_PORT, NIX_DI_PIN, (seg_code >> i) & 0x01);
-        gpio_bit_reset(NIX_SCK_PORT, NIX_SCK_PIN);
-        gpio_bit_set(NIX_SCK_PORT, NIX_SCK_PIN);
-    }
-
-    // chip selection
-    for (i = 7; i >= 0; i--) {
-        gpio_bit_write(NIX_DI_PORT, NIX_DI_PIN, (chip >> i) & 0x01);
-        gpio_bit_reset(NIX_SCK_PORT, NIX_SCK_PIN);
-        gpio_bit_set(NIX_SCK_PORT, NIX_SCK_PIN);
-    }
-
-    gpio_bit_reset(NIX_RCK_PORT, NIX_RCK_PIN);
-    gpio_bit_set(NIX_RCK_PORT, NIX_RCK_PIN);
+    shift(seg_code);
+    shift(1 << chip);
+    rck_action();
 }
 
 void Int_NixieTube_SetNum(long int num) {
-    char i;
-    printf("Int_NixieTube_SetNum num = %ld\n", num);
+    LOG_DEBUG("Int_NixieTube_SetNum num = %ld\n", num);
 
-    for (i = 0; i < 8; i++) {
+    for (int i = 0; i < 8; i++) {
         s_buffer[i] = 0;
     }
 
-    i = 7;
+    int i = 7;
     while (num > 0) {
         s_buffer[i] = s_code_table[(num % 10)];
-        printf("s_buffer[%d] = %#x\n", (int)i, (int)s_buffer[i]);
+        LOG_DEBUG("s_buffer[%d] = %#x\n", (int)i, (int)s_buffer[i]);
         num /= 10;
         i--;
     }
@@ -132,7 +148,7 @@ void Int_NixieTube_Refresh() {
 void Int_NixieTube_SetStr(char* str) {
     uint8_t i;
     if (str == NULL) {
-        printf("[Int_NixieTube_SetStr] str = null\n");
+        LOG_DEBUG("[Int_NixieTube_SetStr] str = null\n");
         return;
     }
 
@@ -146,6 +162,5 @@ void Int_NixieTube_SetStr(char* str) {
         i++;
         str++;
     }
-    // printf("[Int_NixieTube_SetStr] s_buffer:\n");
-    // Com_Util_PrintArrHex(s_buffer, 8);
+    LOG_DUMP("Int_NixieTube_SetStr done", s_buffer, 8);
 }
