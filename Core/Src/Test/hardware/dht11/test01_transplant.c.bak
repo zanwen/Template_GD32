@@ -7,12 +7,10 @@
 #include "int_matrixkey.h"
 #include "int_nixietube.h"
 #include "int_dht11.h"
-#include "hal_i2c_soft.h"
 
-#define DEV_ADDR 0xA2
-#define REG_ADDR_SECOND 0x02
 
 void on_read_complete(void);
+
 
 int main(void) {
     NVIC_SetPriorityGrouping(NVIC_PRIGROUP_PRE2_SUB2);
@@ -21,15 +19,13 @@ int main(void) {
     hal_usart0_init();
     hal_usart0_read_complete_callabck(on_read_complete);
 
-    hal_i2c_soft_init();
-    uint8_t second = 0x10;
-    hal_i2c_soft_write(DEV_ADDR, REG_ADDR_SECOND, &second, 1);
+    uint8_t buf[5] = {0};
+    Struct_DHT_Data st_dht;
+    Int_DHT11_Init();
+    Int_DHT11_GetData(buf);
+    Int_DHT11_Convert(buf, &st_dht);
 
-    second = 0;
     while (1) {
-        hal_i2c_soft_read(DEV_ADDR, REG_ADDR_SECOND, &second, 1);
-        LOG_DEBUG("Second: %#x", second);
-        delay_1ms(1000);
     }
 }
 
