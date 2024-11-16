@@ -6,14 +6,11 @@
 #include "hal_wdgt.h"
 #include "int_matrixkey.h"
 #include "int_nixietube.h"
+#include "int_dht11.h"
 
-#define BUF_SIZE 100
 
 void on_read_complete(void);
 
-void on_key_down(uint8_t row, uint8_t col);
-
-uint8_t buf[BUF_SIZE] = {0};
 
 int main(void) {
     NVIC_SetPriorityGrouping(NVIC_PRIGROUP_PRE2_SUB2);
@@ -22,21 +19,11 @@ int main(void) {
     hal_usart0_init();
     hal_usart0_read_complete_callabck(on_read_complete);
 
-    Int_NixieTube_Init();
-//    Int_NixieTube_SetStr("12345");
-    uint8_t code[] = {0xF9,
-                      0xA4,
-                      0xB0,
-                      0x99,
-                      0x92,
-                      0x82,
-                      0xF8,
-                      0x80,};
-
-    for (uint8_t i = 0; i < 8; ++i) {
-        Int_NixieTube_DisplaySingle(i, code[i]);
-        delay_1ms(1000);
-    }
+    uint8_t buf[5] = {0};
+    Struct_DHT_Data st_dht;
+    Int_DHT11_Init();
+    Int_DHT11_GetData(buf);
+    Int_DHT11_Convert(buf, &st_dht);
 
     while (1) {
     }
@@ -44,8 +31,4 @@ int main(void) {
 
 void on_read_complete(void) {
 
-}
-
-void on_key_down(uint8_t row, uint8_t col) {
-    LOG_DEBUG("key down: row %d, col %d\r\n", row, col);
 }

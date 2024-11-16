@@ -80,19 +80,36 @@ void Int_NixieTube_Init() {
 //    for (uint8_t i = 0; i < 8; ++i) {
 //        gpio_bit_write(NIX_DI_PORT, NIX_DI_PIN, (data & (0x80 >> i)) ? SET : RESET);
 //        gpio_bit_write(NIX_SCK_PORT, NIX_SCK_PIN, RESET);
-////        __NOP();
+//        __NOP();
 //        gpio_bit_write(NIX_SCK_PORT, NIX_SCK_PIN, SET);
-////        __NOP();
+//        __NOP();
 //    }
 //}
 //
 //static void rck_action() {
 //    gpio_bit_write(NIX_RCK_PORT, NIX_RCK_PIN, RESET);
-////    __NOP();
+//    __NOP();
 //    gpio_bit_write(NIX_RCK_PORT, NIX_RCK_PIN, SET);
-////    __NOP();
+//    __NOP();
 //}
 
+//static void shift(uint8_t data) {
+//    for (uint8_t i = 0; i < 8; ++i) {
+//        gpio_bit_write(NIX_DI_PORT, NIX_DI_PIN, (data & (0x80 >> i)) ? SET : RESET);
+//        gpio_bit_reset(NIX_SCK_PORT, NIX_SCK_PIN);
+//        __NOP();
+//        gpio_bit_set(NIX_SCK_PORT, NIX_SCK_PIN);
+//        __NOP();
+//    }
+//}
+//
+//static void rck_action() {
+//    gpio_bit_reset(NIX_RCK_PORT, NIX_RCK_PIN);
+//    __NOP();
+//    gpio_bit_set(NIX_RCK_PORT, NIX_RCK_PIN);
+//    __NOP();
+//}
+//
 static void shift(uint8_t data) {
     for (uint8_t i = 0; i < 8; ++i) {
         gpio_bit_write(NIX_DI_PORT, NIX_DI_PIN, (data & (0x80 >> i)) ? SET : RESET);
