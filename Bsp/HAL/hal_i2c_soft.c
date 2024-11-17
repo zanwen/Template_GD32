@@ -29,7 +29,7 @@ void hal_i2c_soft_init() {
 
     // 配置PB6（SCL）和PB7（SDA）为开漏输出模式
     gpio_mode_set(I2C_GPIO_PORT, GPIO_MODE_OUTPUT, GPIO_PUPD_PULLUP, I2C_SCL_PIN | I2C_SDA_PIN);
-    gpio_output_options_set(I2C_GPIO_PORT, GPIO_OTYPE_OD, GPIO_OSPEED_MAX, I2C_SCL_PIN | I2C_SDA_PIN);
+    gpio_output_options_set(I2C_GPIO_PORT, GPIO_OTYPE_OD, GPIO_OSPEED_50MHZ, I2C_SCL_PIN | I2C_SDA_PIN);
 
     // 将SCL和SDA线拉高
     gpio_bit_set(I2C_GPIO_PORT, I2C_SCL_PIN | I2C_SDA_PIN);
