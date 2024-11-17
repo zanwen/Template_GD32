@@ -1,0 +1,46 @@
+#include "hal_usart0.h"
+#include "logger.h"
+#include "retarget.h"
+#include "systick.h"
+#include "hal_timer.h"
+#include "int_rtc8563.h"
+#include "hal_i2c_hard.h"
+
+#define DEV_ADDR 0xA2
+#define REG_ADDR_SECOND 0x02
+
+void on_read_complete(void);
+
+ void init_clock() {
+     Clock clock;
+     clock.year = 2024;
+     clock.month = 4;
+     clock.day = 19;
+     clock.weekday = 6;
+     clock.hour = 23;
+     clock.minute = 59;
+     clock.second = 56;
+     Int_RTC_SetClock(&clock);
+ }
+
+int main(void) {
+    NVIC_SetPriorityGrouping(NVIC_PRIGROUP_PRE2_SUB2);
+    systick_config();
+    retarget_init(USART0);
+    hal_usart0_init();
+    hal_usart0_read_complete_callabck(on_read_complete);
+
+    Int_RTC_Init();
+    init_clock();
+
+    while (1) {
+        Clock clock = {0};
+        Int_RTC_GetClock(&clock);
+        Int_RTC_PrintClock(&clock);
+        delay_1ms(1000);
+    }
+}
+
+void on_read_complete(void) {
+
+}

@@ -1,17 +1,5 @@
 #include "int_rtc8563.h"
-#include "hal_i2c_soft.h"
-#include "hal_i2c_hard.h"
-
-#define RTC_I2C_HARD_ENABLE
-#if defined(RTC_I2C_SOFT_ENABLE)
-    #define RTC_I2C_INIT_FN() hal_i2c_soft_init()
-    #define RTC_I2C_WRITE_FN(dev_addr, reg_addr, data, size) hal_i2c_soft_write(dev_addr, reg_addr, data, size)
-    #define RTC_I2C_READ_FN(dev_addr, reg_addr, data, size) hal_i2c_soft_read(dev_addr, reg_addr, data, size)
-#elif defined(RTC_I2C_HARD_ENABLE)
-    #define RTC_I2C_INIT_FN() hal_i2c_hard_init()
-    #define RTC_I2C_WRITE_FN(dev_addr, reg_addr, data, size) hal_i2c_hard_write(dev_addr, reg_addr, data, size)
-    #define RTC_I2C_READ_FN(dev_addr, reg_addr, data, size) hal_i2c_hard_read(dev_addr, reg_addr, data, size)
-#endif
+#include "hal_i2c_switch.h"
 
 #define DECIMAL_TO_BCD(val) ((val % 10) | ((val / 10) << 4))
 #define BCD_TO_DECIMAL(val) ((val >> 4) * 10 + (val & 0x0F))
