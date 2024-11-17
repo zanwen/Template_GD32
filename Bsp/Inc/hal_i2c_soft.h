@@ -6,6 +6,7 @@
 #define HAL_I2C_SOFT_H
 
 #include "gd32f4xx.h"
+#include <stdbool.h>
 
 void hal_i2c_soft_init();
 bool hal_i2c_soft_write(uint8_t dev_addr, uint8_t reg_addr, uint8_t *data, uint16_t size);

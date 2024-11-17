@@ -6,6 +6,9 @@
 #define COM_TYPEDEF_H
 #include "gd32f4xx.h"
 
+typedef uint8_t u8;
+typedef uint8_t bit;
+
 typedef void (*callback_t)(void);
 
 #endif//COM_TYPEDEF_H

@@ -1,7 +1,6 @@
 //
 // Created by 86157 on 2024/11/16.
 //
-#include <stdbool.h>
 #include "hal_i2c_soft.h"
 #include "systick.h"
 #include "logger.h"

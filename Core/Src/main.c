@@ -8,11 +8,24 @@
 #include "int_nixietube.h"
 #include "int_dht11.h"
 #include "hal_i2c_soft.h"
+#include "int_rtc8563.h"
 
 #define DEV_ADDR 0xA2
 #define REG_ADDR_SECOND 0x02
 
 void on_read_complete(void);
+
+ void init_clock() {
+     Clock clock;
+     clock.year = 2024;
+     clock.month = 4;
+     clock.day = 19;
+     clock.weekday = 6;
+     clock.hour = 23;
+     clock.minute = 59;
+     clock.second = 56;
+     Int_RTC_SetClock(&clock);
+ }
 
 int main(void) {
     NVIC_SetPriorityGrouping(NVIC_PRIGROUP_PRE2_SUB2);
@@ -21,14 +34,13 @@ int main(void) {
     hal_usart0_init();
     hal_usart0_read_complete_callabck(on_read_complete);
 
-    hal_i2c_soft_init();
-    uint8_t second = 0x10;
-    hal_i2c_soft_write(DEV_ADDR, REG_ADDR_SECOND, &second, 1);
+    Int_RTC_Init();
+    init_clock();
 
-    second = 0;
+    Clock clock = {0};
     while (1) {
-        hal_i2c_soft_read(DEV_ADDR, REG_ADDR_SECOND, &second, 1);
-        LOG_DEBUG("Second: %#x", second);
+        Int_RTC_GetClock(&clock);
+        Int_RTC_PrintClock(&clock);
         delay_1ms(1000);
     }
 }
