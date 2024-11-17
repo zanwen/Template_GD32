@@ -3,8 +3,12 @@
 #include "retarget.h"
 #include "systick.h"
 #include "hal_timer.h"
+#include "hal_wdgt.h"
+#include "int_matrixkey.h"
+#include "int_nixietube.h"
+#include "int_dht11.h"
+#include "hal_i2c_soft.h"
 #include "int_rtc8563.h"
-#include "hal_i2c_hard.h"
 
 #define DEV_ADDR 0xA2
 #define REG_ADDR_SECOND 0x02
@@ -30,15 +34,13 @@ int main(void) {
     hal_usart0_init();
     hal_usart0_read_complete_callabck(on_read_complete);
 
-    hal_i2c_hard_init();
+    Int_RTC_Init();
+    init_clock();
 
-    uint8_t second = 0x54;
-    hal_i2c_hard_write(DEV_ADDR, REG_ADDR_SECOND, &second, 1);
-
-    second = 0;
+    Clock clock = {0};
     while (1) {
-        hal_i2c_hard_read(DEV_ADDR, REG_ADDR_SECOND, &second, 1);
-        LOG_DEBUG("second = %#x", second);
+        Int_RTC_GetClock(&clock);
+        Int_RTC_PrintClock(&clock);
         delay_1ms(1000);
     }
 }
