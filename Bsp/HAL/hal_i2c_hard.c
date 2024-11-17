@@ -40,8 +40,9 @@ void hal_i2c_hard_init() {
     i2c_deinit(I2C_PERIPH);
     i2c_clock_config(I2C_PERIPH, I2C_SPEED, I2C_DUTY_CYCLE);
     i2c_mode_addr_config(I2C_PERIPH, I2C_I2CMODE_ENABLE, I2C_ADDFORMAT_7BITS, 0x00); // 配置为主模式
-    i2c_ack_config(I2C_PERIPH, I2C_ACK_ENABLE);
     i2c_enable(I2C_PERIPH);
+    // must after I2CEN
+    i2c_ack_config(I2C_PERIPH, I2C_ACK_ENABLE);
 }
 
 static bool wait_for_flag(uint32_t flag, FlagStatus status) {
@@ -120,6 +121,8 @@ int hal_i2c_hard_read(uint8_t dev_addr, uint8_t reg_addr, uint8_t *buf, uint16_t
     if (!send_device_address(dev_addr, I2C_RECEIVER)) return false;
 
     // 接收数据
+    i2c_ackpos_config(I2C_PERIPH, I2C_ACKPOS_CURRENT);
+    if (!wait_for_flag(I2C_CTL0_ACKEN, SET)) return false;
     for (uint16_t i = 0; i < size; i++) {
         if (i == size - 1) {
             i2c_ack_config(I2C_PERIPH, I2C_ACK_DISABLE);  // 最后一个字节发送NACK

@@ -30,15 +30,13 @@ int main(void) {
     hal_usart0_init();
     hal_usart0_read_complete_callabck(on_read_complete);
 
-    hal_i2c_hard_init();
+    Int_RTC_Init();
+    init_clock();
 
-    uint8_t second = 0x54;
-    hal_i2c_hard_write(DEV_ADDR, REG_ADDR_SECOND, &second, 1);
-
-    second = 0;
     while (1) {
-        hal_i2c_hard_read(DEV_ADDR, REG_ADDR_SECOND, &second, 1);
-        LOG_DEBUG("second = %#x", second);
+        Clock clock = {0};
+        Int_RTC_GetClock(&clock);
+        Int_RTC_PrintClock(&clock);
         delay_1ms(1000);
     }
 }
