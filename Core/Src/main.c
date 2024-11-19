@@ -30,10 +30,8 @@ int main(void) {
     hal_adc_init();
     
     while (1) {
-//        float temp = hal_adc_get_internal_temp();
-//        LOG_DEBUG("temperature: %.2f°C", temp);
+        float temp = hal_adc_get_internal_temp();
         float v_potentiometer = hal_adc_get_potentiometer_vol();
-        LOG_DEBUG("v_potentiometer = %.1f", v_potentiometer);
         delay_1ms(1000);
     }
 }

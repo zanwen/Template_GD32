@@ -9,7 +9,6 @@
 #include "logger.h"
 
 void hal_adc_init(void);
-uint16_t hal_adc_get_value(void);
 float hal_adc_get_internal_temp(void);
 float hal_adc_get_potentiometer_vol(void);
 
