@@ -6,8 +6,8 @@
 #include "systick.h"
 
 #define ADC_CHANNEL_SIZE 2
-#define ADC_RANK_POTENTIOMETER 0
-#define ADC_RANK_TEMPERATURE 1
+#define ADC_RANK_TEMPERATURE 0
+#define ADC_RANK_POTENTIOMETER 1
 #define ADC_DMA_CHANNEL DMA1, DMA_CH0
 
 static uint16_t adc_value[ADC_CHANNEL_SIZE] = {0};
@@ -58,8 +58,8 @@ static void adc_config(void) {
 
     /* ADC channel length config */
     adc_channel_length_config(ADC0, ADC_ROUTINE_CHANNEL, ADC_CHANNEL_SIZE);
-    adc_routine_channel_config(ADC0, 0, ADC_CHANNEL_14, ADC_SAMPLETIME_15);
-    adc_routine_channel_config(ADC0, 1, ADC_CHANNEL_16, ADC_SAMPLETIME_15);
+    adc_routine_channel_config(ADC0, 0, ADC_CHANNEL_16, ADC_SAMPLETIME_15);
+    adc_routine_channel_config(ADC0, 1, ADC_CHANNEL_14, ADC_SAMPLETIME_15);
 
     /* ADC temperature and Vref enable */
     adc_channel_16_to_18(ADC_TEMP_VREF_CHANNEL_SWITCH, ENABLE);
@@ -95,17 +95,15 @@ void hal_adc_trigger(void) {
     dma_flag_clear(ADC_DMA_CHANNEL, DMA_FLAG_FTF);
 }
 
-float hal_adc_get_internal_temp(void) {
-    hal_adc_trigger();
-    uint16_t adc = adc_value[ADC_RANK_TEMPERATURE];
-    // adc / 4096 = v_temp / 3.3v
-    float v_temp = adc * 3.3 / 4096;
-    return (1.45 - v_temp) * 1000 / 4.1 + 25;
-}
 
-float hal_adc_get_potentiometer_vol(void) {
+void hal_adc_measure(adc_result_t *buf) {
     hal_adc_trigger();
-    uint16_t adc = adc_value[ADC_RANK_POTENTIOMETER];
-    // v / 3.3 = adc / 4096
-    return adc * 3.3 / 4096;
+
+    // adc / 4096 = v_temp / 3.3v
+    float v_temp = adc_value[ADC_RANK_TEMPERATURE] * 3.3 / 4096;
+    float temperature =  (1.45 - v_temp) * 1000 / 4.1 + 25;
+    buf->internal_temperature = temperature;
+
+    float v_potentiometeradc = adc_value[ADC_RANK_POTENTIOMETER] * 3.3 / 4096;
+    buf->potentiometer_vol = v_potentiometeradc;
 }

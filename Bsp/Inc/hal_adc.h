@@ -8,8 +8,12 @@
 #include "gd32f4xx.h"
 #include "logger.h"
 
+typedef struct {
+    float internal_temperature;
+    float potentiometer_vol;
+} adc_result_t;
+
 void hal_adc_init(void);
-float hal_adc_get_internal_temp(void);
-float hal_adc_get_potentiometer_vol(void);
+void hal_adc_measure(adc_result_t *buf);
 
 #endif//HAL_ADC_H

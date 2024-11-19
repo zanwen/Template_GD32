@@ -28,10 +28,12 @@ int main(void) {
     hal_usart0_read_complete_callabck(on_read_complete);
     
     hal_adc_init();
-    
+
+    adc_result_t result = {0};
     while (1) {
-        float temp = hal_adc_get_internal_temp();
-        float v_potentiometer = hal_adc_get_potentiometer_vol();
+        hal_adc_measure(&result);
+        LOG_DEBUG("temperature: %.2f°C, potentiometer: %.1f",
+                  result.internal_temperature, result.potentiometer_vol);
         delay_1ms(1000);
     }
 }
