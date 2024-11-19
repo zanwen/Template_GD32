@@ -32,8 +32,10 @@ int main(void) {
     adc_result_t result = {0};
     while (1) {
         hal_adc_measure(&result);
-        LOG_DEBUG("temperature: %.2f°C, potentiometer: %.1f",
-                  result.internal_temperature, result.potentiometer_vol);
+        LOG_DEBUG("temperature: %.2f°C\n potentiometer: %.1f\n NTC temperature: %d\n",
+                  result.internal_temperature,
+                  result.potentiometer_vol,
+                  result.ntc_temperature);
         delay_1ms(1000);
     }
 }

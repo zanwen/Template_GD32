@@ -11,6 +11,7 @@
 typedef struct {
     float internal_temperature;
     float potentiometer_vol;
+    uint16_t ntc_temperature;
 } adc_result_t;
 
 void hal_adc_init(void);
