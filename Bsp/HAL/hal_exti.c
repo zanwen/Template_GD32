@@ -89,6 +89,16 @@ void hal_exti_init(HAL_EXTI_NO hal_exti_no, bool only_software_trigger) {
             nvic_irq = EXTI2_IRQn;
             trig_type = HAL_EXTI2_TRIG_TYPE;
             break;
+        case HAL_EXTI5:
+            gpio_clk = HAL_EXTI5_GPIO_CLK;
+            gpio_port = HAL_EXTI5_GPIO_PORT;
+            gpio_pin = GPIO_PIN_5; // ext5 use pin5
+            exti_line = EXTI_5;
+            source_port = HAL_EXTI5_SOURCE_PORT;
+            source_pin = EXTI_SOURCE_PIN5;
+            nvic_irq = EXTI5_9_IRQn;
+            trig_type = HAL_EXTI5_TRIG_TYPE;
+            break;
         default:
             return;
     }
@@ -102,4 +112,14 @@ void hal_exti_init(HAL_EXTI_NO hal_exti_no, bool only_software_trigger) {
                                HAL_EXTI_IRQ_PRIORITY, HAL_EXTI_IRQ_SUB_PRIORITY);
     }
 
+}
+
+void hal_exti5_9_handle_irq(void) {
+    if (RESET != exti_interrupt_flag_get(EXTI_5)) {
+        hal_exti5_callback();
+        exti_interrupt_flag_clear(EXTI_5);
+    }
+}
+
+__attribute__((weak)) void hal_exti5_callback(void) {
 }

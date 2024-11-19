@@ -39,6 +39,7 @@ OF SUCH DAMAGE.
 extern void hal_usart0_handle_irq(void);
 extern void hal_exti0_handle_irq(void);
 extern void hal_exti2_handle_irq(void);
+extern void hal_exti5_9_handle_irq(void);
 extern void hal_tim5_dac_irqhandler(void);
 extern void hal_tim6_dac_irqhandler(void);
 extern void hal_dma1_ch0_irqhandler(void);
@@ -185,10 +186,11 @@ void EXTI0_IRQHandler(void) {
 }
 
 void EXTI2_IRQHandler(void) {
-    if (RESET != exti_interrupt_flag_get(EXTI_2)) {
-        hal_exti2_handle_irq();
-        exti_interrupt_flag_clear(EXTI_2);
-    }
+    hal_exti2_handle_irq();
+}
+
+void EXTI9_5_IRQHandler(void) {
+    hal_exti5_9_handle_irq();
 }
 
 /**

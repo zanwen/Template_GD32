@@ -1,5 +1,6 @@
 #include "int_rtc8563.h"
 #include "hal_i2c_switch.h"
+#include "hal_exti.h"
 
 #define DECIMAL_TO_BCD(val) ((val % 10) | ((val / 10) << 4))
 #define BCD_TO_DECIMAL(val) ((val >> 4) * 10 + (val & 0x0F))
@@ -65,7 +66,7 @@ static void Int_RTC_BCD2Clock(Clock* clk, u8* bcd) {
 static void Int_RTC_InterruptCallback() {
     u8 control;
     // static u8 control;
-    RTC_I2C_READ_FN(ADDR_DEV, ADDR_INT_CONTROL, &control, 1);
+    HAL_I2C_READ_FN(ADDR_DEV, ADDR_INT_CONTROL, &control, 1);
 
     if ((control & FLAG_TIE) && (control & FLAG_TF)) {
         if (s_timer_callback) {
@@ -82,44 +83,49 @@ static void Int_RTC_InterruptCallback() {
     }
 }
 
+void hal_exti5_callback(void) {
+    LOG_DEBUG("hal_exti5_callback")
+    Int_RTC_InterruptCallback();
+}
+
 void Int_RTC_Init() {
-    RTC_I2C_INIT_FN();
-    // todo Dri_INT3_RegisterCallabck(Int_RTC_InterruptCallback);
+    HAL_I2C_INIT_FN();
+    hal_exti_init(HAL_EXTI5, false);
 }
 
 void Int_RTC_SetClock(Clock* clk) {
     u8 bcd[CLOCK_REGS_NUM];
     LOG_DEBUG("Int_RTC_SetClock")
     Int_RTC_Clock2BCD(clk, bcd);
-    RTC_I2C_WRITE_FN(ADDR_DEV, ADDR_CLOCK, bcd, CLOCK_REGS_NUM);
+    HAL_I2C_WRITE_FN(ADDR_DEV, ADDR_CLOCK, bcd, CLOCK_REGS_NUM);
 }
 
 void Int_RTC_GetClock(Clock* clk) {
     u8 bcd[CLOCK_REGS_NUM];
-    RTC_I2C_READ_FN(ADDR_DEV, ADDR_CLOCK, bcd, CLOCK_REGS_NUM);
+    HAL_I2C_READ_FN(ADDR_DEV, ADDR_CLOCK, bcd, CLOCK_REGS_NUM);
     Int_RTC_BCD2Clock(clk, bcd);
 }
 
 void Int_RTC_EnableAlarm() {
     u8 control;
-    RTC_I2C_READ_FN(ADDR_DEV, ADDR_INT_CONTROL, &control, 1);
+    HAL_I2C_READ_FN(ADDR_DEV, ADDR_INT_CONTROL, &control, 1);
     control |= (1 << CONTROL_BIT_AIE);   // bit1: AIE Alarm Interrupt Enable
     control &= ~(1 << CONTROL_BIT_AF);   // bit3: AF Alarm interrupt Flag
-    RTC_I2C_WRITE_FN(ADDR_DEV, ADDR_INT_CONTROL, &control, 1);
+    HAL_I2C_WRITE_FN(ADDR_DEV, ADDR_INT_CONTROL, &control, 1);
 }
 
 void Int_RTC_DisableAlarm() {
     u8 control;
-    RTC_I2C_READ_FN(ADDR_DEV, ADDR_INT_CONTROL, &control, 1);
+    HAL_I2C_READ_FN(ADDR_DEV, ADDR_INT_CONTROL, &control, 1);
     control &= ~(1 << CONTROL_BIT_AIE);   // bit1: AIE Alarm Interrupt Enable
-    RTC_I2C_WRITE_FN(ADDR_DEV, ADDR_INT_CONTROL, &control, 1);
+    HAL_I2C_WRITE_FN(ADDR_DEV, ADDR_INT_CONTROL, &control, 1);
 }
 
 void Int_RTC_ClearAlarmFlag() {
     u8 control;
-    RTC_I2C_READ_FN(ADDR_DEV, ADDR_INT_CONTROL, &control, 1);
+    HAL_I2C_READ_FN(ADDR_DEV, ADDR_INT_CONTROL, &control, 1);
     control &= ~(1 << CONTROL_BIT_AF);   // bit3: AF Alarm interrupt Flag
-    RTC_I2C_WRITE_FN(ADDR_DEV, ADDR_INT_CONTROL, &control, 1);
+    HAL_I2C_WRITE_FN(ADDR_DEV, ADDR_INT_CONTROL, &control, 1);
 }
 
 void Int_RTC_ConfigTimer(Frequence frequence, u8 countdown) {
@@ -128,29 +134,29 @@ void Int_RTC_ConfigTimer(Frequence frequence, u8 countdown) {
     config[0] = frequence | FLAG_TE;
     // 2. timer value
     config[1] = countdown;
-    RTC_I2C_WRITE_FN(ADDR_DEV, ADDR_TIMER_CONTROL, config, 2);
+    HAL_I2C_WRITE_FN(ADDR_DEV, ADDR_TIMER_CONTROL, config, 2);
 }
 
 void Int_RTC_EnableTimer() {
     u8 control;
-    RTC_I2C_READ_FN(ADDR_DEV, ADDR_INT_CONTROL, &control, 1);
+    HAL_I2C_READ_FN(ADDR_DEV, ADDR_INT_CONTROL, &control, 1);
     control |= (1 << CONTROL_BIT_TIE);
     control &= ~(1 << CONTROL_BIT_TF);
-    RTC_I2C_WRITE_FN(ADDR_DEV, ADDR_INT_CONTROL, &control, 1);
+    HAL_I2C_WRITE_FN(ADDR_DEV, ADDR_INT_CONTROL, &control, 1);
 }
 
 void Int_RTC_DisableTimer() {
     u8 control;
-    RTC_I2C_READ_FN(ADDR_DEV, ADDR_INT_CONTROL, &control, 1);
+    HAL_I2C_READ_FN(ADDR_DEV, ADDR_INT_CONTROL, &control, 1);
     control &= ~(1 << CONTROL_BIT_TIE);
-    RTC_I2C_WRITE_FN(ADDR_DEV, ADDR_INT_CONTROL, &control, 1);
+    HAL_I2C_WRITE_FN(ADDR_DEV, ADDR_INT_CONTROL, &control, 1);
 }
 
 void Int_RTC_ClearTimerFlag() {
     u8 control;
-    RTC_I2C_READ_FN(ADDR_DEV, ADDR_INT_CONTROL, &control, 1);
+    HAL_I2C_READ_FN(ADDR_DEV, ADDR_INT_CONTROL, &control, 1);
     control &= ~(1 << CONTROL_BIT_TF);
-    RTC_I2C_WRITE_FN(ADDR_DEV, ADDR_INT_CONTROL, &control, 1);
+    HAL_I2C_WRITE_FN(ADDR_DEV, ADDR_INT_CONTROL, &control, 1);
 }
 
 void Int_RTC_RegisterAlarmCallback(callback_t callabck) {
@@ -164,7 +170,7 @@ void Int_RTC_RegisterTimerCallback(callback_t callabck) {
 void Int_RTC_SetAlarm(Clock* alarm) {
     u8 bcd[ALARM_REGS_NUM];
     Int_RTC_Alarm2BCD(alarm, bcd);
-    RTC_I2C_WRITE_FN(ADDR_DEV, ADDR_ALARM, bcd, ALARM_REGS_NUM);
+    HAL_I2C_WRITE_FN(ADDR_DEV, ADDR_ALARM, bcd, ALARM_REGS_NUM);
 }
 
 void Int_RTC_FormatDate(Clock* clk, char* buf) {

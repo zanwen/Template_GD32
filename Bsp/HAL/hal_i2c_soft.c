@@ -166,6 +166,21 @@ bool hal_i2c_soft_write(uint8_t dev_addr, uint8_t reg_addr, uint8_t *data, uint1
     return true;
 }
 
+bool hal_i2c_soft_write_bytes(uint8_t *data, uint16_t size) {
+    start();
+    for (uint16_t i = 0; i < size; ++i) {
+        send_byte(*data);
+        if (!wait_ack()) {
+            stop();
+            LOG_DEBUG("write data[%d] failed", *data)
+            return false;
+        }
+        data++;
+    }
+    stop();
+    return true;
+}
+
 bool hal_i2c_soft_read(uint8_t dev_addr, uint8_t reg_addr, uint8_t *buf, uint16_t size) {
     // dummy write for register address
     if (!start_for_write(dev_addr, reg_addr)) {

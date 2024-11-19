@@ -41,7 +41,7 @@ void hal_i2c_hard_init() {
     i2c_clock_config(I2C_PERIPH, I2C_SPEED, I2C_DUTY_CYCLE);
     i2c_mode_addr_config(I2C_PERIPH, I2C_I2CMODE_ENABLE, I2C_ADDFORMAT_7BITS, 0x00); // 配置为主模式
     i2c_enable(I2C_PERIPH);
-    // must after I2CEN
+    // must after I2CEN，发送数据后自动接收ack
     i2c_ack_config(I2C_PERIPH, I2C_ACK_ENABLE);
 }
 
@@ -79,7 +79,20 @@ static bool send_stop() {
     return wait_for_flag(I2C_CTL0_STOP, RESET);
 }
 
-int hal_i2c_hard_write(uint8_t dev_addr, uint8_t reg_addr, uint8_t *data, uint16_t size) {
+bool hal_i2c_hard_write_bytes(uint8_t *data, uint16_t size) {
+    // 等待I2C总线空闲
+    if (!wait_for_flag(I2C_FLAG_I2CBSY, RESET)) return false;
+    // 发送起始信号
+    if (!send_start()) return false;
+    // 发送数据
+    for (uint16_t i = 0; i < size; i++) {
+        if (!send_byte(data[i])) return false;
+    }
+    // 发送停止信号
+    return send_stop();
+}
+
+bool hal_i2c_hard_write(uint8_t dev_addr, uint8_t reg_addr, uint8_t *data, uint16_t size) {
     // 等待I2C总线空闲
     if (!wait_for_flag(I2C_FLAG_I2CBSY, RESET)) return false;
 
@@ -101,7 +114,7 @@ int hal_i2c_hard_write(uint8_t dev_addr, uint8_t reg_addr, uint8_t *data, uint16
     return send_stop();
 }
 
-int hal_i2c_hard_read(uint8_t dev_addr, uint8_t reg_addr, uint8_t *buf, uint16_t size) {
+bool hal_i2c_hard_read(uint8_t dev_addr, uint8_t reg_addr, uint8_t *buf, uint16_t size) {
     // 等待I2C总线空闲
     if (!wait_for_flag(I2C_FLAG_I2CBSY, RESET)) return false;
 
