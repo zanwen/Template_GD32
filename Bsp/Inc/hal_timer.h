@@ -11,6 +11,7 @@
 #define HAL_TIMER_PRESCALER 10
 
 #include "gd32f4xx.h"
+#include "stdbool.h"
 
 void hal_timer_basic_start(uint32_t timer_periph, uint16_t freq);
 

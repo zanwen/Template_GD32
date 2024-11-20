@@ -1,5 +1,5 @@
-#ifndef __OLEDFONT_H
-#define __OLEDFONT_H
+#ifndef __INT_I2C_OLEDFONT_H
+#define __INT_I2C_OLEDFONT_H
 const unsigned char asc2_0806[][6] =
 {
 {0x00, 0x00, 0x00, 0x00, 0x00, 0x00},// sp

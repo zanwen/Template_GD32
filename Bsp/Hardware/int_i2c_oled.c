@@ -1,6 +1,5 @@
 #include "hal_i2c_switch.h"
 #include "int_i2c_oled.h"
-#include "int_i2c_oledfont.h"
 
 u8 OLED_GRAM[144][8];
 
