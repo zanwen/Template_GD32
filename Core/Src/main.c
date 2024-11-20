@@ -67,6 +67,5 @@ int main(void) {
 }
 
 void on_read_complete(void) {
-    SPI_OLED_Clear();
     SPI_OLED_Display_GB2312_string(0,0,"жа");
 }

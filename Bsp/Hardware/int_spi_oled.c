@@ -1,4 +1,5 @@
 #include "int_spi_oled.h"
+#include "hal_spi_switch.h"
 
 //反显函数
 void SPI_OLED_ColorTurn(u8 i) {
@@ -46,15 +47,9 @@ void SPI_OLED_WR_Byte(u8 dat, u8 cmd) {
     else
         SPI_OLED_DC_Clr();
     SPI_OLED_CS_Clr();
-    for (i = 0; i < 8; i++) {
-        SPI_OLED_SCL_Clr();
-        if (dat & 0x80)
-            SPI_OLED_SDA_Set();
-        else
-            SPI_OLED_SDA_Clr();
-        SPI_OLED_SCL_Set();
-        dat <<= 1;
-    }
+
+    SPI_WRITE(dat);
+
     SPI_OLED_CS_Set();
     SPI_OLED_DC_Set();
 }
@@ -129,31 +124,12 @@ void SPI_OLED_Display_5x7(u8 x, u8 y, u8 *dp) {
 
 //送指令到晶联讯字库IC
 void Send_Command_to_ROM(u8 dat) {
-    u8 i;
-    for (i = 0; i < 8; i++) {
-        SPI_OLED_SCL_Clr();
-        if (dat & 0x80) {
-            SPI_OLED_SDA_Set();
-        } else {
-            SPI_OLED_SDA_Clr();
-        }
-        dat <<= 1;
-        SPI_OLED_SCL_Set();
-    }
+    SPI_WRITE(dat);
 }
 
 //从晶联讯字库IC中取汉字或字符数据（1个字节）
 u8 Get_data_from_ROM(void) {
-    u8 i, read = 0;
-    for (i = 0; i < 8; i++) {
-        SPI_OLED_SCL_Clr();
-        read <<= 1;
-        if (SPI_OLED_READ_FS0()) {
-            read++;
-        }
-        SPI_OLED_SCL_Set();
-    }
-    return read;
+    return SPI_READ();
 }
 
 

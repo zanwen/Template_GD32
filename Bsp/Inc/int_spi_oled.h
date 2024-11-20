@@ -12,19 +12,13 @@
 //CS2=CS2
 //-----------------OLED端口定义---------------- 
 
-#define SPI_OLED_SCL_Clr() gpio_bit_reset(GPIOA,GPIO_PIN_5)//SCL
-#define SPI_OLED_SCL_Set() gpio_bit_set(GPIOA,GPIO_PIN_5)
 
-#define SPI_OLED_SDA_Clr() gpio_bit_reset(GPIOA,GPIO_PIN_7)//SDA
-#define SPI_OLED_SDA_Set() gpio_bit_set(GPIOA,GPIO_PIN_7)
 
 #define SPI_OLED_DC_Clr()  gpio_bit_reset(GPIOA,GPIO_PIN_2)//DC
 #define SPI_OLED_DC_Set()  gpio_bit_set(GPIOA,GPIO_PIN_2)
  		     
 #define SPI_OLED_CS_Clr()  gpio_bit_reset(GPIOA,GPIO_PIN_3)//CS1
 #define SPI_OLED_CS_Set()  gpio_bit_set(GPIOA,GPIO_PIN_3)
- 		     
-#define SPI_OLED_READ_FS0()    gpio_input_bit_get(GPIOA,GPIO_PIN_6)//FS0
 
 #define SPI_OLED_ROM_CS_Clr()  gpio_bit_reset(GPIOC,GPIO_PIN_5)//CS2
 #define SPI_OLED_ROM_CS_Set()  gpio_bit_set(GPIOC,GPIO_PIN_5)
