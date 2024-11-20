@@ -16,56 +16,57 @@ int main(void) {
 
     SPI_OLED_Init();
     LOG_DEBUG("SPI_OLED_Init");
-    SPI_OLED_ColorTurn(0);//0æ­£å¸¸æ˜¾ç¤ºï¼Œ1 åè‰²æ˜¾ç¤º
-    SPI_OLED_DisplayTurn(0);//0æ­£å¸¸æ˜¾ç¤º 1 å±å¹•ç¿»è½¬æ˜¾ç¤º
+    SPI_OLED_ColorTurn(0);//0Õı³£ÏÔÊ¾£¬1 ·´É«ÏÔÊ¾
+    SPI_OLED_DisplayTurn(0);//0Õı³£ÏÔÊ¾ 1 ÆÁÄ»·­×ªÏÔÊ¾
 
     while (1) {
         SPI_OLED_Display_128x64(bmp1);
         delay_1ms(500);
-        SPI_OLED_Display_GB2312_string(0,0,"12864,å¸¦ä¸­æ–‡å­—åº“");	/*åœ¨ç¬¬1é¡µï¼Œç¬¬1åˆ—ï¼Œæ˜¾ç¤ºä¸€ä¸²16x16ç‚¹é˜µæ±‰å­—æˆ–8x16çš„ASCIIå­—*/
-        SPI_OLED_Display_GB2312_string(0,2,"16X16ç®€ä½“æ±‰å­—åº“,");  /*æ˜¾ç¤ºä¸€ä¸²16x16ç‚¹é˜µæ±‰å­—æˆ–8x16çš„ASCIIå­—.ä»¥ä¸‹é›·åŒ*/
-        SPI_OLED_Display_GB2312_string(0,4,"æˆ–8X16ç‚¹é˜µASCII,");
-        SPI_OLED_Display_GB2312_string(0,6,"æˆ–5X7ç‚¹é˜µASCIIç ");
-        delay_1ms(500);				
+        SPI_OLED_Display_GB2312_string(0,0,"12864,´øÖĞÎÄ×Ö¿â");	/*ÔÚµÚ1Ò³£¬µÚ1ÁĞ£¬ÏÔÊ¾Ò»´®16x16µãÕóºº×Ö»ò8x16µÄASCII×Ö*/
+        SPI_OLED_Display_GB2312_string(0,2,"16X16¼òÌåºº×Ö¿â,");  /*ÏÔÊ¾Ò»´®16x16µãÕóºº×Ö»ò8x16µÄASCII×Ö.ÒÔÏÂÀ×Í¬*/
+        SPI_OLED_Display_GB2312_string(0,4,"»ò8X16µãÕóASCII,");
+        SPI_OLED_Display_GB2312_string(0,6,"»ò5X7µãÕóASCIIÂë");
+        delay_1ms(500);
         SPI_OLED_Clear();
-        SPI_OLED_Display_GB2312_string(24,0,"ä¸­æ™¯å›­ç”µå­");	
-        SPI_OLED_Display_GB2312_string(0,2,"ä¸»è¦ç”Ÿäº§OLEDæ¨¡å—");
-        SPI_OLED_Display_GB2312_string(0,4,"é¡¾å®¢è‡³ä¸ŠçœŸè¯šæœåŠ¡");
-        SPI_OLED_Display_GB2312_string(0,6,"è¯šä¿¡ä¸è´¨é‡ç¬¬ä¸€ï¼");
-        delay_1ms(500);	
-        SPI_OLED_Clear();		
-        SPI_OLED_Display_GB2312_string(0,0,"GB2312ç®€ä½“å­—åº“åŠ");	
-        SPI_OLED_Display_GB2312_string(0,2,"æœ‰å›¾å‹åŠŸèƒ½ï¼Œå¯è‡ª");	
-        SPI_OLED_Display_GB2312_string(0,4,"ç¼–å¤§å­—æˆ–å›¾åƒæˆ–ç”Ÿ");
-        SPI_OLED_Display_GB2312_string(0,6,"åƒ»å­—ï¼Œä¾‹å¦‚ï¼š");
-        SPI_OLED_Display_16x16(97,6,jiong1);					/*åœ¨ç¬¬7é¡µï¼Œç¬¬81åˆ—æ˜¾ç¤ºå•ä¸ªè‡ªç¼–ç”Ÿåƒ»æ±‰å­—â€œå›§â€*/
+        SPI_OLED_Display_GB2312_string(24,0,"ÖĞ¾°Ô°µç×Ó");
+        SPI_OLED_Display_GB2312_string(0,2,"Ö÷ÒªÉú²úOLEDÄ£¿é");
+        SPI_OLED_Display_GB2312_string(0,4,"¹Ë¿ÍÖÁÉÏÕæ³Ï·şÎñ");
+        SPI_OLED_Display_GB2312_string(0,6,"³ÏĞÅÓëÖÊÁ¿µÚÒ»£¡");
+        delay_1ms(500);
+        SPI_OLED_Clear();
+        SPI_OLED_Display_GB2312_string(0,0,"GB2312¼òÌå×Ö¿â¼°");
+        SPI_OLED_Display_GB2312_string(0,2,"ÓĞÍ¼ĞÍ¹¦ÄÜ£¬¿É×Ô");
+        SPI_OLED_Display_GB2312_string(0,4,"±à´ó×Ö»òÍ¼Ïñ»òÉú");
+        SPI_OLED_Display_GB2312_string(0,6,"Æ§×Ö£¬ÀıÈç£º");
+        SPI_OLED_Display_16x16(97,6,jiong1);					/*ÔÚµÚ7Ò³£¬µÚ81ÁĞÏÔÊ¾µ¥¸ö×Ô±àÉúÆ§ºº×Ö¡°?¡±*/
         SPI_OLED_Display_16x16(113,6,lei1);
         delay_1ms(500);
         SPI_OLED_Clear();
-        SPI_OLED_Display_GB2312_string(0,0,"<!@#$%^&*()_-+]/");	/*åœ¨ç¬¬1é¡µï¼Œç¬¬1åˆ—ï¼Œæ˜¾ç¤ºä¸€ä¸²16x16ç‚¹é˜µæ±‰å­—æˆ–8*16çš„ASCIIå­—*/
-        SPI_OLED_Display_string_5x7(0,2,"<!@#$%^&*()_-+]/;.,?[");/*åœ¨ç¬¬3é¡µï¼Œç¬¬1åˆ—ï¼Œæ˜¾ç¤ºä¸€ä¸²5x7ç‚¹é˜µçš„ASCIIå­—*/
-        SPI_OLED_Display_string_5x7(0,3,"XY electronics Co., ");/*æ˜¾ç¤ºä¸€ä¸²5x7ç‚¹é˜µçš„ASCIIå­—*/
-        SPI_OLED_Display_string_5x7(0,4,"Ltd. established at  ");/*æ˜¾ç¤ºä¸€ä¸²5x7ç‚¹é˜µçš„ASCIIå­—*/	
-        SPI_OLED_Display_string_5x7(0,5,"year 2010.Focus OLED ");/*æ˜¾ç¤ºä¸€ä¸²5x7ç‚¹é˜µçš„ASCIIå­—*/
-        SPI_OLED_Display_string_5x7(0,6,"Mobile:13265585975");/*æ˜¾ç¤ºä¸€ä¸²5x7ç‚¹é˜µçš„ASCIIå­—*/
-        SPI_OLED_Display_string_5x7(0,7,"Tel:0755-32910715");/*æ˜¾ç¤ºä¸€ä¸²5x7ç‚¹é˜µçš„ASCIIå­—*/
+        SPI_OLED_Display_GB2312_string(0,0,"<!@#$%^&*()_-+]/");	/*ÔÚµÚ1Ò³£¬µÚ1ÁĞ£¬ÏÔÊ¾Ò»´®16x16µãÕóºº×Ö»ò8*16µÄASCII×Ö*/
+        SPI_OLED_Display_string_5x7(0,2,"<!@#$%^&*()_-+]/;.,?[");/*ÔÚµÚ3Ò³£¬µÚ1ÁĞ£¬ÏÔÊ¾Ò»´®5x7µãÕóµÄASCII×Ö*/
+        SPI_OLED_Display_string_5x7(0,3,"XY electronics Co., ");/*ÏÔÊ¾Ò»´®5x7µãÕóµÄASCII×Ö*/
+        SPI_OLED_Display_string_5x7(0,4,"Ltd. established at  ");/*ÏÔÊ¾Ò»´®5x7µãÕóµÄASCII×Ö*/
+        SPI_OLED_Display_string_5x7(0,5,"year 2010.Focus OLED ");/*ÏÔÊ¾Ò»´®5x7µãÕóµÄASCII×Ö*/
+        SPI_OLED_Display_string_5x7(0,6,"Mobile:13265585975");/*ÏÔÊ¾Ò»´®5x7µãÕóµÄASCII×Ö*/
+        SPI_OLED_Display_string_5x7(0,7,"Tel:0755-32910715");/*ÏÔÊ¾Ò»´®5x7µãÕóµÄASCII×Ö*/
         delay_1ms(500);
-        SPI_OLED_Clear();	
-        SPI_OLED_Display_GB2312_string(0,0,"å•Šé˜¿åŸƒæŒ¨å“å”‰å“€çš‘");	/*åœ¨ç¬¬1é¡µï¼Œç¬¬1åˆ—ï¼Œæ˜¾ç¤ºä¸€ä¸²16x16ç‚¹é˜µæ±‰å­—æˆ–8x16çš„ASCIIå­—*/
-        SPI_OLED_Display_GB2312_string(0,2,"ç™Œè”¼çŸ®è‰¾ç¢çˆ±éš˜é");  /*æ˜¾ç¤ºä¸€ä¸²16x16ç‚¹é˜µæ±‰å­—æˆ–8x16çš„ASCIIå­—.ä»¥ä¸‹é›·åŒ*/
-        SPI_OLED_Display_GB2312_string(0,4,"æ°¨å®‰ä¿ºæŒ‰æš—å²¸èƒºæ¡ˆ");
-        SPI_OLED_Display_GB2312_string(0,6,"è‚®æ˜‚ç›å‡¹æ•–ç†¬ç¿±è¢„");		        
+        SPI_OLED_Clear();
+        SPI_OLED_Display_GB2312_string(0,0,"°¡°¢°£°¤°¥°¦°§°¨");	/*ÔÚµÚ1Ò³£¬µÚ1ÁĞ£¬ÏÔÊ¾Ò»´®16x16µãÕóºº×Ö»ò8x16µÄASCII×Ö*/
+        SPI_OLED_Display_GB2312_string(0,2,"°©°ª°«°¬°­°®°¯°°");  /*ÏÔÊ¾Ò»´®16x16µãÕóºº×Ö»ò8x16µÄASCII×Ö.ÒÔÏÂÀ×Í¬*/
+        SPI_OLED_Display_GB2312_string(0,4,"°±°²°³°´°µ°¶°·°¸");
+        SPI_OLED_Display_GB2312_string(0,6,"°¹°º°»°¼°½°¾°¿°À");
         delay_1ms(500);
-        SPI_OLED_Clear();	
-        SPI_OLED_Display_GB2312_string(0,0,"é¬Ÿé¬£éº½éº¾ç¸»éº‚éº‡éºˆ");
-        SPI_OLED_Display_GB2312_string(0,2,"éº‹éº’é–éºéºŸé»›é»œé»");
-        SPI_OLED_Display_GB2312_string(0,4,"é» é»Ÿé»¢é»©é»§é»¥é»ªé»¯");
-        SPI_OLED_Display_GB2312_string(0,6,"é½„é¼¬é¼¹é¼·é¼½é¼¾é¼¢é¼¯");
+        SPI_OLED_Clear();
+        SPI_OLED_Display_GB2312_string(0,0,"÷ß÷à÷á÷â÷ã÷ä÷å÷æ");
+        SPI_OLED_Display_GB2312_string(0,2,"÷ç÷è÷é÷ê÷ë÷ì÷í÷î");
+        SPI_OLED_Display_GB2312_string(0,4,"÷ï÷ğ÷ñ÷ò÷ó÷ô÷õ÷ö");
+        SPI_OLED_Display_GB2312_string(0,6,"÷ş÷ø÷ú÷û÷ü÷ı÷÷÷ù");
         delay_1ms(500);
         SPI_OLED_Clear();
     }
 }
 
 void on_read_complete(void) {
-
+    SPI_OLED_Clear();
+    SPI_OLED_Display_GB2312_string(0,0,"ÖĞ");
 }
