@@ -2,18 +2,8 @@
 // Created by 86157 on 2024/11/20.
 //
 #include "hal_spi_soft.h"
-
-#define SPI_CLK_PORT_RCU RCU_GPIOA
-#define SPI_CLK_PORT GPIOA
-#define SPI_CLK_PIN GPIO_PIN_5
-
-#define SPI_MOSI_PORT_RCU RCU_GPIOA
-#define SPI_MOSI_PORT GPIOA
-#define SPI_MOSI_PIN GPIO_PIN_7
-
-#define SPI_MISO_PORT_RCU RCU_GPIOA
-#define SPI_MISO_PORT GPIOA
-#define SPI_MISO_PIN GPIO_PIN_6
+#include "hal_spi_integrate.h"
+#include "logger.h"
 
 #define SPI_SCL_RESET() gpio_bit_reset(SPI_CLK_PORT, SPI_CLK_PIN)//SCL
 #define SPI_SCL_SET() gpio_bit_set(SPI_CLK_PORT, SPI_CLK_PIN)
@@ -38,6 +28,7 @@ void hal_spi_soft_init(void) {
 
     gpio_bit_set(SPI_CLK_PORT, SPI_CLK_PIN);
     gpio_bit_set(SPI_MOSI_PORT, SPI_MOSI_PIN);
+    LOG_DEBUG("hal_spi_soft_init done")
 }
 
 uint8_t hal_spi_soft_read(void) {
