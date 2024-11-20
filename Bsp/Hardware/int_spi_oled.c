@@ -279,26 +279,22 @@ void SPI_OLED_ShowNum(u8 x, u8 y, float num1, u8 len) {
     }
 }
 
-//OLED的初始化
-void SPI_OLED_Init(void) {
+static void gpio_config() {
     rcu_periph_clock_enable(RCU_GPIOA);
     rcu_periph_clock_enable(RCU_GPIOC);
 
-    gpio_mode_set(GPIOA, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE,
-                  GPIO_PIN_5 | GPIO_PIN_7 | GPIO_PIN_2 | GPIO_PIN_3);
-    gpio_mode_set(GPIOC, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE,
-                  GPIO_PIN_5);
-    gpio_output_options_set(GPIOA, GPIO_OTYPE_PP, GPIO_OSPEED_MAX,
-                            GPIO_PIN_5 | GPIO_PIN_7 | GPIO_PIN_2 | GPIO_PIN_3);
-    gpio_output_options_set(GPIOC, GPIO_OTYPE_PP, GPIO_OSPEED_MAX,
-                            GPIO_PIN_5);
+    gpio_mode_set(GPIOA, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE,GPIO_PIN_2 | GPIO_PIN_3);
+    gpio_mode_set(GPIOC, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE,GPIO_PIN_5);
+    gpio_output_options_set(GPIOA, GPIO_OTYPE_PP, GPIO_OSPEED_MAX,GPIO_PIN_2 | GPIO_PIN_3);
+    gpio_output_options_set(GPIOC, GPIO_OTYPE_PP, GPIO_OSPEED_MAX,GPIO_PIN_5);
 
-    gpio_mode_set(GPIOA, GPIO_MODE_INPUT, GPIO_PUPD_PULLUP,
-                  GPIO_PIN_6);
-
-    gpio_bit_set(GPIOA, GPIO_PIN_5 | GPIO_PIN_7 | GPIO_PIN_2 | GPIO_PIN_3);
+    gpio_bit_set(GPIOA,  GPIO_PIN_2 | GPIO_PIN_3);
     gpio_bit_set(GPIOC, GPIO_PIN_5);
-
+}
+//OLED的初始化
+void SPI_OLED_Init(void) {
+    gpio_config();
+    SPI_INIT();
     delay_1ms(200);
 
     SPI_OLED_WR_Byte(0xAE, SPI_OLED_CMD);//--turn off oled panel
@@ -331,3 +327,4 @@ void SPI_OLED_Init(void) {
     SPI_OLED_Clear();
     SPI_OLED_WR_Byte(0xAF, SPI_OLED_CMD); /*display ON*/
 }
+

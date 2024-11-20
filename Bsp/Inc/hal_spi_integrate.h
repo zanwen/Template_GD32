@@ -9,6 +9,7 @@
 
 #include "hal_spi_soft.h"
 
+#define SPI_INIT() hal_spi_soft_init()
 #define SPI_WRITE(dat) hal_spi_soft_write(dat)
 #define SPI_READ() hal_spi_soft_read()
 

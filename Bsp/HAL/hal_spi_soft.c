@@ -34,7 +34,7 @@ void hal_spi_soft_init(void) {
     gpio_mode_set(SPI_MOSI_PORT, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, SPI_MOSI_PIN);
     gpio_output_options_set(SPI_MOSI_PORT, GPIO_OTYPE_PP, GPIO_OSPEED_MAX, SPI_MOSI_PIN);
 
-    gpio_mode_set(SPI_MISO_PORT, GPIO_MODE_INPUT, GPIO_PUPD_PULLUP, SPI_MISO_PIN);
+    gpio_mode_set(SPI_MISO_PORT, GPIO_MODE_INPUT, GPIO_PUPD_NONE, SPI_MISO_PIN);
 
     gpio_bit_set(SPI_CLK_PORT, SPI_CLK_PIN);
     gpio_bit_set(SPI_MOSI_PORT, SPI_MOSI_PIN);
