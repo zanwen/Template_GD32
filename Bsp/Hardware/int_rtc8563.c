@@ -1,6 +1,6 @@
 #include "int_rtc8563.h"
-#include "hal_i2c_switch.h"
 #include "hal_exti.h"
+#include "hal_i2c_integrate.h"
 
 #define DECIMAL_TO_BCD(val) ((val % 10) | ((val / 10) << 4))
 #define BCD_TO_DECIMAL(val) ((val >> 4) * 10 + (val & 0x0F))

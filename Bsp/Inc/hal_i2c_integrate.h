@@ -2,8 +2,8 @@
 // Created by 86157 on 2024/11/17.
 //
 
-#ifndef HAL_I2C_SWITCH_H
-#define HAL_I2C_SWITCH_H
+#ifndef HAL_I2C_INTEGRATE_H
+#define HAL_I2C_INTEGRATE_H
 
 #include "hal_i2c_soft.h"
 #include "hal_i2c_hard.h"
@@ -27,4 +27,4 @@
     #error "Invalid HAL_I2C_SWITCH value. Please choose HAL_I2C_SWITCH_SOFT or HAL_I2C_SWITCH_HARD."
 #endif
 
-#endif //HAL_I2C_SWITCH_H
+#endif//HAL_I2C_INTEGRATE_H

@@ -4,12 +4,12 @@
 
 
 
-#ifndef HAL_SPI_SWITCH_H
-#define HAL_SPI_SWITCH_H
+#ifndef HAL_SPI_INTEGRATE_H
+#define HAL_SPI_INTEGRATE_H
 
 #include "hal_spi_soft.h"
 
 #define SPI_WRITE(dat) hal_spi_soft_write(dat)
 #define SPI_READ() hal_spi_soft_read()
 
-#endif//HAL_SPI_SWITCH_H
+#endif//HAL_SPI_INTEGRATE_H

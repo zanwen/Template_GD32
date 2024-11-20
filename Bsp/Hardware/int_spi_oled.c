@@ -1,5 +1,5 @@
 #include "int_spi_oled.h"
-#include "hal_spi_switch.h"
+#include "hal_spi_integrate.h"
 
 //反显函数
 void SPI_OLED_ColorTurn(u8 i) {
