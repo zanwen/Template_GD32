@@ -25,7 +25,7 @@ int main(void) {
     systick_config();
     retarget_init(USART0);
     hal_usart0_init();
-    hal_usart0_read_complete_callabck(on_read_complete);
+    hal_usart0_read_complete_callback(on_read_complete);
 
     OLED_Init();
     LOG_DEBUG("OLED_Init done");

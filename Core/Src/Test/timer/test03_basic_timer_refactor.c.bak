@@ -39,7 +39,7 @@ int main(void) {
     systick_config();
     retarget_init(USART0);
     hal_usart0_init();
-    hal_usart0_read_complete_callabck(on_read_complete);
+    hal_usart0_read_complete_callback(on_read_complete);
 
     gpio_config();
     hal_timer_basic_init(TIMER5, 10, 2000);

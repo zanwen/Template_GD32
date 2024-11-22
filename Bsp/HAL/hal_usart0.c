@@ -146,6 +146,6 @@ uint16_t hal_usart0_get_str(uint8_t *buf, uint16_t bufsize) {
     buf[read_size] = '\0';
     return read_size;
 }
-void hal_usart0_read_complete_callabck(callback_t callback) {
+void hal_usart0_read_complete_callback(callback_t callback) {
     sg_read_callback = callback;
 }

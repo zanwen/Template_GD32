@@ -47,7 +47,7 @@ int main(void) {
     systick_config();
     retarget_init(USART0);
     hal_usart0_init();
-    hal_usart0_read_complete_callabck(on_read_complete);
+    hal_usart0_read_complete_callback(on_read_complete);
 
     LOG_DEBUG("before dma, buffer = %s", buffer);
     hal_dma1_m2m_init((uint32_t)src, (uint32_t)buffer, 100);
