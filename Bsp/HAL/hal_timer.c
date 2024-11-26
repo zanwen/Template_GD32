@@ -37,22 +37,22 @@ void hal_timer_basic_start(uint32_t timer_periph, uint16_t freq) {
 void hal_tim5_dac_irqhandler(void) {
     if (SET == timer_interrupt_flag_get(TIMER5, TIMER_INT_FLAG_UP)) {
         timer_interrupt_flag_clear(TIMER5, TIMER_INT_FLAG_UP);
-        hal_timer5_overflow_callback();
+        hal_timer5_update_callback();
     }
 }
 
-__attribute__((weak)) void hal_timer5_overflow_callback() {
+__attribute__((weak)) void hal_timer5_update_callback() {
 
 }
 
 void hal_tim6_dac_irqhandler(void) {
     if (SET == timer_interrupt_flag_get(TIMER6, TIMER_INT_FLAG_UP)) {
         timer_interrupt_flag_clear(TIMER6, TIMER_INT_FLAG_UP);
-        hal_timer6_overflow_callback();
+        hal_timer6_update_callback();
     }
 }
 
-__attribute__((weak)) void hal_timer6_overflow_callback() {
+__attribute__((weak)) void hal_timer6_update_callback() {
 
 }
 

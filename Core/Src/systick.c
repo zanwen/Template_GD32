@@ -38,6 +38,7 @@ OF SUCH DAMAGE.
 volatile static uint32_t delay;
 volatile static uint64_t systick_ticks = 0;
 
+
 /*!
     \brief      configure systick
     \param[in]  none

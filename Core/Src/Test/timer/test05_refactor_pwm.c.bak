@@ -29,11 +29,11 @@ void gpio_config(void) {
     gpio_bit_reset(GPIOD, GPIO_PIN_15);
 }
 
-void hal_timer5_overflow_callback() {
+void hal_timer5_update_callback() {
     gpio_bit_toggle(GPIOD, GPIO_PIN_15);
 }
 
-void hal_timer6_overflow_callback() {
+void hal_timer6_update_callback() {
     gpio_bit_toggle(GPIOD, GPIO_PIN_14);
 }
 

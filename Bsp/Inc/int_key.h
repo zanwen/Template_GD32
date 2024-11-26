@@ -20,6 +20,7 @@ typedef void (*key_callback_t)(KEY_NO event_key);
 
 void int_key_init(void);
 void int_key_scan(void);
-void int_key_register_callback(KEY_NO key_no, key_callback_t on_pressed, key_callback_t on_released);
+void key_up_callback(KEY_NO key_no);
+void key_down_callback(KEY_NO key_no);
 
 #endif//INT_KEY_H

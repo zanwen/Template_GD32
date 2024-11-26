@@ -15,9 +15,9 @@
 
 void hal_timer_basic_start(uint32_t timer_periph, uint16_t freq);
 
-void hal_timer5_overflow_callback();
+void hal_timer5_update_callback();
 
-void hal_timer6_overflow_callback();
+void hal_timer6_update_callback();
 
 void hal_timer_init(rcu_periph_enum periph_clk, uint32_t timer_periph, uint16_t freq);
 
