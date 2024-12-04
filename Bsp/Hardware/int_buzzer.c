@@ -2,10 +2,11 @@
 // Created by 86157 on 2024/11/11.
 //
 
-#include <stdbool.h>
 #include "int_buzzer.h"
 #include "hal_timer.h"
+#include "scheduler.h"
 #include "systick.h"
+#include <stdbool.h>
 
 // 两只老虎
 //					 	C`	   D`     E`   F`	  G`	A`	  B`    C``
@@ -16,14 +17,12 @@ static uint16_t hz[] = {1047, 1175, 1319, 1397, 1568, 1760, 1976, 2093};
 // 简谱
 static uint8_t notes[] = {
         1, 2, 3, 1, 1, 2, 3, 1, 3, 4, 5, 3, 4, 5,
-        5, 6, 5, 4, 3, 1, 5, 6, 5, 4, 3, 1, 1, 5, 1, 1, 5, 1
-};
+        5, 6, 5, 4, 3, 1, 5, 6, 5, 4, 3, 1, 1, 5, 1, 1, 5, 1};
 
 // 音长
 static uint8_t durations[] = {
         4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 8, 4, 4, 8,
-        3, 1, 3, 1, 4, 4, 3, 1, 3, 1, 4, 4, 4, 4, 8, 4, 4, 8
-};
+        3, 1, 3, 1, 4, 4, 3, 1, 3, 1, 4, 4, 4, 4, 8, 4, 4, 8};
 
 static void gpio_init() {
     rcu_periph_clock_enable(INT_BUZZER_GPIO_RCU);
@@ -42,6 +41,7 @@ void int_buzzer_init(void) {
     hal_timer_pwm_channel_enable(INT_BUZZER_TIMER, INT_BUZZER_TIMER_CH, false);
 }
 
+extern
 void int_buzzer_buzz(uint16_t freq, uint16_t duration) {
     hal_timer_pwm_set_freq(INT_BUZZER_TIMER, freq);
     hal_timer_pwm_set_duty_cycle(INT_BUZZER_TIMER, INT_BUZZER_TIMER_CH,
@@ -63,9 +63,26 @@ void int_buzzer_playdemo() {
 
     for (i = 0; i < len; i++) {
         int_buzzer_buzz(hz[notes[i]], durations[i] * 50);
-        int_buzzer_stop(); // 每播放一个音，适当停顿一下，建议
+        int_buzzer_stop();// 每播放一个音，适当停顿一下，建议
         delay_1ms(5);
-
     }
     int_buzzer_stop();
+}
+
+extern task_t tasks[];
+void int_buzzer_playdemo_task() {
+    uint16_t len = sizeof(notes) / sizeof(notes[0]);
+    static uint16_t note_index = 0;
+
+    hal_timer_pwm_set_freq(INT_BUZZER_TIMER, hz[notes[note_index]]);
+    hal_timer_pwm_set_duty_cycle(INT_BUZZER_TIMER, INT_BUZZER_TIMER_CH,
+                                 hz[notes[note_index]], 50);
+    hal_timer_enable(INT_BUZZER_TIMER);
+
+    tasks[4].task_interval_ms = durations[note_index] * 50;
+
+    note_index++;
+    if (note_index >= len) {
+        note_index = 0;
+    }
 }

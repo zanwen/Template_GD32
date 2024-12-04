@@ -12,8 +12,8 @@ typedef void (*task_function_t)(void);
 
 typedef enum {
     TASK_READY,
-    TASK_RUNNING,
-    TASK_WAITING
+    TASK_WAITING,
+    TASK_DISABLED
 } task_state_t;
 
 typedef struct {

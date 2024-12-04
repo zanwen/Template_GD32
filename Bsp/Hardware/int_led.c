@@ -138,6 +138,12 @@ void int_led_turn(LED_INDEX led_index, bit_status led_status, uint32_t delay_ms)
         delay_1ms(delay_ms);
     }
 }
+void int_led_toggle(LED_INDEX led_index, uint32_t delay_ms) {
+    gpio_bit_toggle(led_gpio[led_index].port, led_gpio[led_index].pin);
+    if (delay_ms) {
+        delay_1ms(delay_ms);
+    }
+}
 
 static void init_led_gpio(rcu_periph_enum rcu_gpio, uint32_t port, uint32_t pin) {
     rcu_periph_clock_enable(rcu_gpio);

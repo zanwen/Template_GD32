@@ -11,49 +11,50 @@
 #define NIX_SCK_PIN      GPIO_PIN_4
 #define HYPHEN_INDEX 21
 
-static uint8_t s_buffer[8];
+static void Int_NixieTube_DisplaySingle(uint8_t chip, uint8_t seg_code);
 
-uint8_t s_code_table[] = {
-    // 0 	1	 2	-> 9	(����012...9)
-    0xC0,
-    0xF9,
-    0xA4,
-    0xB0,
-    0x99,
-    0x92,
-    0x82,
-    0xF8,
-    0x80,
-    0x90,
-    // 0. 1. 2. -> 9.	(����10,11,12....19)
-    0x40,
-    0x79,
-    0x24,
-    0x30,
-    0x19,
-    0x12,
-    0x02,
-    0x78,
-    0x00,
-    0x10,
-    // . -						(����20,21)
-    0x7F,
-    0xBF,
-    // AbCdEFHJLPqU		(����22,23,24....33)
-    0x88,
-    0x83,
-    0xC6,
-    0xA1,
-    0x86,
-    0x8E,
-    0x89,
-    0xF1,
-    0xC7,
-    0x8C,
-    0x98,
-    0xC1
+uint8_t nixietube_code_table[] = {
+        // 0 	1	 2	-> 9	(����012...9)
+        0xC0,
+        0xF9,
+        0xA4,
+        0xB0,
+        0x99,
+        0x92,
+        0x82,
+        0xF8,
+        0x80,
+        0x90,
+        // 0. 1. 2. -> 9.	(����10,11,12....19)
+        0x40,
+        0x79,
+        0x24,
+        0x30,
+        0x19,
+        0x12,
+        0x02,
+        0x78,
+        0x00,
+        0x10,
+        // . -						(����20,21)
+        0x7F,
+        0xBF,
+        // AbCdEFHJLPqU		(����22,23,24....33)
+        0x88,
+        0x83,
+        0xC6,
+        0xA1,
+        0x86,
+        0x8E,
+        0x89,
+        0xF1,
+        0xC7,
+        0x8C,
+        0x98,
+        0xC1
 };
 
+static uint8_t s_buffer[8];
 
 static void clear_buffer() {
     uint8_t i;
@@ -130,7 +131,11 @@ static void rck_action() {
 
 // chip selection: from 0 to 7
 // seg_code: segment selection code
-void Int_NixieTube_DisplaySingle(uint8_t chip, uint8_t seg_code) {
+void Int_NixieTube_Display(uint8_t chip, uint8_t num) {
+    Int_NixieTube_DisplaySingle(chip, nixietube_code_table[num]);
+}
+
+static void Int_NixieTube_DisplaySingle(uint8_t chip, uint8_t seg_code) {
     shift(seg_code);
     shift(1 << chip);
     rck_action();
@@ -145,7 +150,7 @@ void Int_NixieTube_SetNum(long int num) {
 
     int i = 7;
     while (num > 0) {
-        s_buffer[i] = s_code_table[(num % 10)];
+        s_buffer[i] = nixietube_code_table[(num % 10)];
         LOG_DEBUG("s_buffer[%d] = %#x\n", (int)i, (int)s_buffer[i]);
         num /= 10;
         i--;
@@ -172,9 +177,9 @@ void Int_NixieTube_SetStr(char* str) {
     i = 0;
     while (*str) {
         if (*str >= '0' && *str <= '9') {
-            s_buffer[i] = s_code_table[*str - '0'];
+            s_buffer[i] = nixietube_code_table[*str - '0'];
         } else {
-            s_buffer[i] = s_code_table[HYPHEN_INDEX];
+            s_buffer[i] = nixietube_code_table[HYPHEN_INDEX];
         }
         i++;
         str++;

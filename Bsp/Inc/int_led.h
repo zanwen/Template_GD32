@@ -29,7 +29,7 @@ void int_led_off(LED_INDEX led_index, uint32_t delay_ms);
 void int_led_on_all(uint32_t delay_ms);
 void int_led_off_all(uint32_t delay_ms);
 void int_led_turn(LED_INDEX led_index, bit_status led_status, uint32_t delay_ms);
-
+void int_led_toggle(LED_INDEX led_index, uint32_t delay_ms);
 /**
  *
  * @param leds

@@ -25,5 +25,6 @@ void int_buzzer_buzz(uint16_t period, uint16_t duration);
 void int_buzzer_stop(void);
 
 void int_buzzer_playdemo();
+void int_buzzer_playdemo_task();
 
 #endif //INT_BUZZER_H
