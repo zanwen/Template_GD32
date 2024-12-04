@@ -4,12 +4,17 @@
 
 #include "scheduler.h"
 #include "app.h"
+#include "int_led188.h"
 
 task_t tasks[] = {
         TASK_READY,
-        20,
+        1,
         0,
-        app_debug_key_scan,
+        int_led188_refresh,
+        TASK_READY,
+        1000,
+        0,
+        int_led188_set_num,
 };
 
 static const uint8_t TASK_SIZE = sizeof(tasks) / sizeof(tasks[0]);
